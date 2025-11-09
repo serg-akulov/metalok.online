@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+Sitemap: https://metalok.online/sitemap.xml
+Sitemap: https://metalok.ru/sitemap.xml
