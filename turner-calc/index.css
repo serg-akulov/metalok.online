@@ -1,0 +1,114 @@
+body{
+  background-image: url(333.png);
+  background-size: cover;
+  background-color: rgb(0, 0, 0);
+  color: rgb(255, 255, 255);
+  font-size: 18px;
+}
+h2 {
+  margin: 30px auto 10px auto;
+  text-align:center;
+  text-decoration: underline;
+  font-style: normal;
+}
+p a{
+  color: beige;
+}
+.main{
+  max-width: 400px;
+  margin: 0 auto;
+  font-style: italic;
+  padding-left: 0;
+  /*border-style: dotted;
+   *   border-color: black;*/
+}
+.main h1{
+  text-align: center;
+}
+
+.main input{
+  margin-bottom: 10px;
+  width: 100%;
+  height: 30px;
+  background-color: white;
+}
+
+.main button {
+  color: #464649;
+  margin: 20px auto 30px;
+  padding: 10px 50px;
+  font-size: 18px;
+  font-weight: bold;
+  background-color: #37ff01;
+  border-radius: 10px;
+}
+
+.main button:hover{
+  color: rgb(40, 3, 139);
+  cursor: pointer;
+}
+
+div#priceDollar{
+  font-size: 30px;
+  font-weight: bold;
+  text-align: center;
+}
+.intro{
+    font-style:normal;
+    font-size:16px;
+}
+
+.main .box {
+    width: 7%;
+    margin-right: 5%;
+}
+
+label{
+    display: inline-block;
+    margin-bottom: .5rem;
+    width: 100%;
+}
+
+span{
+    display: block;
+    font-size: 20px;
+    margin: -9% auto;
+    width: 80%;
+    padding-bottom: 9%;
+}
+
+div#price{
+  background-color: rgb(255, 255, 255);
+  color: rgb(34, 34, 34);
+  background-size: cover;
+  font-size: 18px;
+}
+
+.price{
+  max-width: 800px;
+  margin: 0 auto;
+  padding-left: 0;
+  /*border-style: dotted;
+   *   border-color: black;*/
+}
+
+.price p { 
+    text-indent: 25px; 
+    
+    
+}
+
+.price button {
+  color: #464649;
+  margin: 20px auto 30px;
+  padding: 20px 50px;
+  font-size: 20px;
+  font-weight: bold;
+  background-color: #37ff01;
+  border-radius: 10px;
+}
+
+.price button:hover{
+  color: rgb(248, 3, 3);
+  cursor: pointer;
+}
