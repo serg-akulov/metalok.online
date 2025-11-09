@@ -1,0 +1,12 @@
+# Папки для шпаргалок
+my_docs/
+
+# Файлы, которые не нужны на GitHub
+*.tmp
+*.log
+*.bak
+Thumbs.db
+.DS_Store
+
+# Если будешь использовать VS Code
+.vscode/
