@@ -1,12 +1,78 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://metalok.online/index.html</loc>
+    <lastmod>2025-11-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1</priority>
+
+    <loc>https://metalok.ru/</loc>
+    <lastmod>2025-11-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1</priority>
+  </url>
+  <url>
+    <loc>https://metalok.online/pochasovaya.html</loc>
+    <lastmod>2025-11-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+
+    <loc>https://metalok.ru/стоимость-токарных-работ/</loc>
+    <lastmod>2025-11-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://metalok.online/policy.html</loc>
+    <lastmod>2025-11-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+
+    <loc>https://metalok.ru/privacy-policy/</loc>
+    <lastmod>2025-11-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://metalok.online/raschet-stoimosti-detali.html</loc>
+    <lastmod>2025-11-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+
+    <loc>https://metalok.ru/цена-токарнои-детали/</loc>
+    <lastmod>2025-11-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://metalok.online/razshifrovka-articula-plastin.html</loc>
+    <lastmod>2025-11-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+
+    <loc>https://metalok.ru/расшифровка-маркировки-пластин-для-т/</loc>
+    <lastmod>2025-11-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://metalok.online/razshifrovka-artikula-derjavki.html</loc>
+    <lastmod>2025-11-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+
+    <loc>https://metalok.ru/как-расшифровать-артикул-токарной-де/</loc>
+    <lastmod>2025-11-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://metalok.online/turner-calc/index.html</loc>
     <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
-  </url>
-  <url>
+
+  
     <loc>https://metalok.ru/turner-calc/index.html</loc>
     <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
