@@ -123,9 +123,7 @@
 </ul></div>                    </nav><!-- #site-navigation -->
                 </div>
 
-<!-- Добавить перед </head> -->
-<link rel="stylesheet" id="superfish-css" href="./source/superfish.css" media="all">
-<script src="./source/jquery.superfish.js" id="jquery-superfish-js"></script>
+
             </header><!-- #masthead -->
 
             <div id="sq-content" class="sq-site-content sq-clearfix">
@@ -331,7 +329,11 @@
 <script id="square-custom-js-extra">
 var square_localize = {"is_rtl":"false"};
 </script>
-
+<!-- Добавить перед </body> или перед скриптом square-custom-js-extra -->
+<script id="square-custom-js-extra">
+var square_localize = {"is_rtl":"false"};
+</script>
+<script src="./source/square-custom.js" id="square-custom-js"></script>
 
 
 
