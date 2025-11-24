@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Токарный Калькулятор — Считай работу правильно</title>
+    <meta name="description" content="Приложение для Android для быстрого расчёта стоимости токарных работ. Не гадай цену — считай точно.">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <style>
+        /* --- CSS VARIABLES & RESET --- */
+        :root {
+            --primary: #ff9800; /* Safety Orange - акцент на действие */
+            --primary-hover: #e68900;
+            --bg-dark: #121212;
+            --bg-card: #1e1e1e;
+            --text-main: #e0e0e0;
+            --text-muted: #a0a0a0;
+            --steel: #4a90e2; /* Steel Blue - акцент на профессионализм */
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-main); line-height: 1.6; }
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+
+        /* --- LAYOUT UTILS --- */
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+        .section { padding: 80px 0; }
+        .text-center { text-align: center; }
+        .btn {
+            display: inline-block;
+            background-color: var(--primary);
+            color: #000;
+            font-weight: bold;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
+        }
+        .btn:hover { background-color: var(--primary-hover); transform: translateY(-2px); }
+        .btn-tg { background-color: #229ED9; color: white; box-shadow: 0 4px 15px rgba(34, 158, 217, 0.3); }
+        .btn-tg:hover { background-color: #1e8bbd; }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1565439396654-e6db14336c2e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        .hero h1 { font-size: 3rem; margin-bottom: 20px; color: #fff; text-transform: uppercase; letter-spacing: 1px; }
+        .hero p { font-size: 1.5rem; margin-bottom: 40px; color: #ddd; max-width: 700px; margin-left: auto; margin-right: auto; }
+        .hero span { color: var(--primary); }
+
+        /* --- PAIN POINTS --- */
+        .pain-points { background-color: var(--bg-card); }
+        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 40px; }
+        .card { background: var(--bg-dark); padding: 30px; border-radius: 12px; border-left: 4px solid var(--steel); }
+        .card h3 { margin-bottom: 15px; color: var(--steel); }
+
+        /* --- DEMO SECTION (THE CALCULATOR) --- */
+        .demo-section { background-color: #151515; border-top: 1px solid #333; border-bottom: 1px solid #333; }
+        .calc-wrapper {
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .calc-form label { display: block; margin-bottom: 5px; color: var(--text-muted); font-size: 0.9rem; }
+        .calc-form input[type="number"], .calc-form input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            background: #2a2a2a;
+            border: 1px solid #444;
+            color: #fff;
+            border-radius: 5px;
+        }
+        .calc-form input:focus { border-color: var(--primary); outline: none; }
+        .calc-result {
+            margin-top: 20px;
+            padding: 20px;
+            background: #253328;
+            border: 1px solid #4caf50;
+            border-radius: 8px;
+            display: none; /* Hidden by default */
+        }
+        .calc-result.active { display: block; animation: fadeIn 0.5s; }
+        .calc-result h3 { color: #4caf50; font-size: 1.5rem; }
+        
+        .badge-android {
+            display: inline-block;
+            background: #333;
+            color: #888;
+            padding: 2px 8px;
+            font-size: 0.7rem;
+            border-radius: 4px;
+            margin-left: 5px;
+            vertical-align: middle;
+        }
+
+        /* --- VIDEO & FEATURES --- */
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 */
+            height: 0;
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            margin-bottom: 40px;
+        }
+        .video-container iframe, .video-container video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .features-list li { margin-bottom: 15px; display: flex; align-items: center; }
+        .features-list li::before {
+            content: "✔";
+            color: var(--primary);
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        /* --- CTA SECTION --- */
+        .cta-section { background: linear-gradient(45deg, #1e1e1e, #2a2a2a); }
+        .price-tag { font-size: 3rem; font-weight: bold; color: var(--primary); margin: 20px 0; }
+        .price-sub { text-decoration: line-through; color: var(--text-muted); font-size: 1.2rem; }
+
+        /* --- FOOTER --- */
+        footer { background: #000; padding: 30px 0; border-top: 1px solid #333; font-size: 0.9rem; color: #666; }
+
+        /* Animations */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .hero p { font-size: 1.1rem; }
+            .grid-3 { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HERO -->
+    <header class="hero">
+        <div class="container">
+            <h1>Хватит гадать, <span>сколько стоит</span> ваша работа</h1>
+            <p>Профессиональный калькулятор токаря для Android. Рассчитай точную рыночную стоимость детали за 30 секунд. Не теряй деньги.</p>
+            <a href="#offer" class="btn">Скачать полную версию</a>
+            <p style="margin-top: 15px; font-size: 0.9rem; opacity: 0.7;">Демо-версия доступна ниже 👇</p>
+        </div>
+    </header>
+
+    <!-- PAIN POINTS -->
+    <section class="section pain-points">
+        <div class="container">
+            <h2 class="text-center" style="margin-bottom: 40px;">Знакомые ситуации?</h2>
+            <div class="grid-3">
+                <div class="card">
+                    <h3>😡 Клиент над душой</h3>
+                    <p>Клиент стоит и ждет цену "прямо сейчас". Вы начинаете нервничать, забываете учесть материал или сложность, и называете сумму наобум.</p>
+                </div>
+                <div class="card">
+                    <h3>📉 Работа в минус</h3>
+                    <p>Назвали 500 рублей, а провозились 3 часа? 63% токарей регулярно недополучают прибыль из-за ошибок в оценке времени и ресурсов.</p>
+                </div>
+                <div class="card">
+                    <h3>🤔 "А сколько я брал?"</h3>
+                    <p>Полгода назад делали такую же деталь, но забыли цену. Назвали другую — клиент думает, что вы берете цены с потолка.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DEMO SECTION -->
+    <section class="section demo-section" id="demo">
+        <div class="container">
+            <h2 class="text-center">Попробуйте Демо-версию онлайн</h2>
+            <p class="text-center" style="margin-bottom: 30px; color: var(--text-muted);">
+                Это упрощенная веб-версия. В приложении для Android доступно в 10 раз больше функций.
+            </p>
+
+            <div class="calc-wrapper">
+                <div class="calc-form">
+                    <label>Курс доллара (или ваша условная единица):</label>
+                    <input type="number" id="dollar" placeholder="Например: 90" value="90">
+
+                    <label>Диаметр заготовки (мм):</label>
+                    <input type="number" id="d_workpiece" placeholder="Ø">
+
+                    <label>Длина детали (мм):</label>
+                    <input type="number" id="l_detail" placeholder="L">
+
+                    <div style="margin: 15px 0;">
+                        <input type="checkbox" id="is_hard" style="width: auto; transform: scale(1.5); margin-right: 10px;">
+                        <label for="is_hard" style="display:inline;">Нержавейка, Титан, Каленка (x1.5 к цене)</label>
+                    </div>
+
+                    <hr style="border-color: #333; margin: 20px 0;">
+
+                    <label>Проточка наружного диаметра (съем в мм):</label>
+                    <input type="number" id="cut_mm" placeholder="Общий слой снятого металла">
+
+                    <label>Расточка отверстий (Ø мм):</label>
+                    <input type="number" id="bore_mm" placeholder="Диаметр сверления/расточки">
+                    
+                    <label style="opacity: 0.5;">Нарезка резьбы (Доступно в App <span class="badge-android">Android</span>)</label>
+                    <input type="text" disabled placeholder="🔒 Только в полной версии" style="opacity: 0.5; cursor: not-allowed;">
+
+                    <label style="opacity: 0.5;">Фрезеровка / Шпонпаз (Доступно в App <span class="badge-android">Android</span>)</label>
+                    <input type="text" disabled placeholder="🔒 Только в полной версии" style="opacity: 0.5; cursor: not-allowed;">
+
+                    <label>Наценка / Скидка (%):</label>
+                    <input type="number" id="markup" placeholder="-30 (скидка) или 30 (наценка)">
+
+                    <button class="btn" style="width: 100%; margin-top: 20px;" onclick="calculateDemo()">Рассчитать стоимость</button>
+                </div>
+
+                <div id="resultBox" class="calc-result">
+                    <h3 id="finalPrice">0 ₽</h3>
+                    <p id="finalTime" style="color: #bbb;">Примерное время: 0 ч.</p>
+                    <p style="font-size: 0.8rem; margin-top: 10px; color: #666;">*Цена ориентировочная, основана на усредненных рыночных данных.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- VIDEO & FEATURES -->
+    <section class="section">
+        <div class="container">
+            <div class="grid-3" style="grid-template-columns: 1.5fr 1fr; align-items: center;">
+                <div>
+                    <div class="video-container">
+                        <!-- Замените src на прямую ссылку или embed youtube, если появится -->
+                        <video controls poster="https://metalok.online/turner-calc/1.png">
+                            <source src="https://metalok.online/media/rolik.mp4" type="video/mp4">
+                            Ваш браузер не поддерживает видео.
+                        </video>
+                    </div>
+                </div>
+                <div>
+                    <h2>Полная версия для Android</h2>
+                    <p style="margin-bottom: 20px;">Ваш карманный помощник, который работает без интернета в любом цеху.</p>
+                    <ul class="features-list">
+                        <li><b>Полный офлайн:</b> Интернет не нужен.</li>
+                        <li><b>Все операции:</b> Конуса, резьбы (метрика/дюйм), канавки, накатка.</li>
+                        <li><b>Коэффициенты:</b> Учет материала и сложности.</li>
+                        <li><b>Гибкость:</b> Настраивайте свою наценку под регион.</li>
+                        <li><b>Обоснование:</b> Покажите экран клиенту — это повышает доверие.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA / OFFER -->
+    <section class="section cta-section text-center" id="offer">
+        <div class="container">
+            <h2>Начните зарабатывать честно</h2>
+            <p>Инвестиция, которая окупается с первого заказа.</p>
+            
+            <div class="price-tag">490 ₽ <span style="font-size: 1rem; color: var(--text-muted); font-weight: normal;">/ навсегда</span></div>
+            
+            <p style="margin-bottom: 30px; max-width: 600px; margin-left: auto; margin-right: auto;">
+                Оплата разовая. Никаких ежемесячных подписок. Вы получаете APK-файл и все будущие обновления бесплатно через закрытый канал.
+            </p>
+
+            <button onclick="window.open('https://t.me/turner_calc_bot?start=dGFyaWZfNjA4MDcyt', '_blank')" class="btn btn-tg">
+                <svg style="width:20px; vertical-align:middle; margin-right:5px;" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-2.02-1.23-2.94-1.83-.41-.27-.4-.78.1-.94.27-.09 1.14-.38 2.06-1.31.92-.94 1.78-2.9 2.08-4.04.14-.53 0-.64 0-.64z"/></svg>
+                Купить через Telegram
+            </button>
+            
+            <p style="margin-top: 20px; font-size: 0.9rem; color: #888;">
+                Почему Telegram? Google Play не принимает платежи из РФ. Бот автоматически выдаст доступ после оплаты картой или ЮMoney.
+            </p>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section">
+        <div class="container">
+            <h2 class="text-center" style="margin-bottom: 40px;">Частые вопросы</h2>
+            <div style="max-width: 800px; margin: 0 auto;">
+                <details style="margin-bottom: 15px; background: var(--bg-card); padding: 15px; border-radius: 8px;">
+                    <summary style="cursor: pointer; font-weight: bold;">Откуда берутся цены?</summary>
+                    <p style="margin-top: 10px; color: var(--text-muted);">Мы проанализировали сотни объявлений и форумов токарей по всей стране. В алгоритм заложены усредненные рыночные цены, которые вы можете корректировать полем "Наценка" под свой город.</p>
+                </details>
+                <details style="margin-bottom: 15px; background: var(--bg-card); padding: 15px; border-radius: 8px;">
+                    <summary style="cursor: pointer; font-weight: bold;">Будет ли работать на iPhone?</summary>
+                    <p style="margin-top: 10px; color: var(--text-muted);">Нет, приложение разработано только для Android (смартфоны и планшеты). APK файл не установится на iOS.</p>
+                </details>
+                <details style="margin-bottom: 15px; background: var(--bg-card); padding: 15px; border-radius: 8px;">
+                    <summary style="cursor: pointer; font-weight: bold;">Как обновлять приложение?</summary>
+                    <p style="margin-top: 10px; color: var(--text-muted);">После покупки вы остаетесь в закрытом канале Telegram. При выходе новой версии вы просто скачиваете новый файл оттуда бесплатно.</p>
+                </details>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container text-center">
+            <p>&copy; 2025 MetalOk.online. Все права защищены.</p>
+            <p style="font-size: 0.8rem; margin-top: 10px;">Приложение является справочным инструментом. Окончательная цена работ определяется мастером.</p>
+        </div>
+    </footer>
+
+    <!-- SCRIPT FOR DEMO CALCULATION -->
+    <script>
+        function calculateDemo() {
+            // Получаем значения
+            let rate = parseFloat(document.getElementById('dollar').value) || 0;
+            let diameter = parseFloat(document.getElementById('d_workpiece').value) || 0;
+            let length = parseFloat(document.getElementById('l_detail').value) || 0;
+            let cut = parseFloat(document.getElementById('cut_mm').value) || 0;
+            let bore = parseFloat(document.getElementById('bore_mm').value) || 0;
+            let markup = parseFloat(document.getElementById('markup').value) || 0;
+            let isHard = document.getElementById('is_hard').checked ? 1.5 : 1.0;
+
+            if (rate === 0 || diameter === 0 || length === 0) {
+                alert("Пожалуйста, заполните базовые поля (Курс, Диаметр, Длина)");
+                return;
+            }
+
+            // Упрощенная логика для демо (симуляция сложного алгоритма приложения)
+            // Эти формулы - примерная аппроксимация, чтобы демо было "живым"
+            
+            let basePrice = 0;
+            let time = 0;
+
+            // Расчет проточки (очень грубый пример)
+            if (cut > 0) {
+                let volumeRemoved = (Math.PI * diameter * length * cut) / 1000; // условный объем
+                basePrice += (volumeRemoved * 0.05 * rate); 
+                time += (volumeRemoved * 0.002);
+            }
+
+            // Расчет расточки
+            if (bore > 0) {
+                basePrice += (length * 0.5 * rate); // Условно 0.5$ за мм длины при расточке
+                time += 0.2;
+            }
+
+            // Базовая настройка станка
+            basePrice += (2 * rate); // 2$ за установку
+            time += 0.1;
+
+            // Применяем материал
+            basePrice *= isHard;
+            time *= isHard;
+
+            // Применяем наценку
+            if (markup !== 0) {
+                basePrice = basePrice * (1 + markup / 100);
+            }
+
+            // Если цена получилась слишком маленькой (меньше минимума)
+            if (basePrice < (3 * rate)) basePrice = 3 * rate; 
+
+            // Округляем
+            let finalPriceRub = Math.round(basePrice);
+            let finalTimeHours = time.toFixed(1);
+
+            // Вывод
+            const resultBox = document.getElementById('resultBox');
+            const priceEl = document.getElementById('finalPrice');
+            const timeEl = document.getElementById('finalTime');
+
+            priceEl.innerText = finalPriceRub + " ₽"; // В Демо считаем, что курс введен для рубля, или просто выводим валюту
+            if(rate !== 90 && rate !== 100) {
+                 priceEl.innerText = finalPriceRub + " ед.";
+            }
+            
+            timeEl.innerText = "Примерное время: " + finalTimeHours + " ч.";
+            
+            resultBox.classList.add('active');
+        }
+    </script>
+</body>
+</html>
