@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Токарный Калькулятор — Считай работу профессионально</title>
+    <meta name="description" content="Приложение для Android для расчета стоимости токарных работ. Узнай точную цену детали за 30 секунд.">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <!-- Подключение шрифтов -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- CSS VARIABLES --- */
+        :root {
+            --primary: #ff9800; /* Safety Orange */
+            --primary-hover: #e68900;
+            --secondary: #2980b9; /* Steel Blue */
+            --bg-dark: #121212;
+            --bg-card: #1e1e1e;
+            --text-main: #e0e0e0;
+            --text-muted: #a0a0a0;
+            --success: #27ae60;
+            --border-color: #333;
+        }
+
+        /* --- GLOBAL RESET --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Roboto', sans-serif; }
+        body { background-color: var(--bg-dark); color: var(--text-main); line-height: 1.6; overflow-x: hidden; }
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+        
+        /* --- LAYOUT --- */
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+        .section { padding: 80px 0; border-bottom: 1px solid var(--border-color); }
+        .text-center { text-align: center; }
+        
+        /* --- BUTTONS --- */
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+            color: #000; font-weight: 800; padding: 16px 32px;
+            border-radius: 8px; font-size: 1.1rem; text-transform: uppercase;
+            letter-spacing: 0.5px; border: none; cursor: pointer;
+            transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
+        }
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(255, 152, 0, 0.5); }
+        
+        .btn-tg {
+            background: #229ED9; color: white; display: inline-flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 15px rgba(34, 158, 217, 0.3); width: 100%; max-width: 350px;
+        }
+        .btn-tg:hover { background: #1f8ubc; transform: translateY(-3px); }
+        .btn-tg img { margin-right: 15px; width: 30px; }
+
+        /* --- HERO SECTION (Версия 1 - Информативная) --- */
+        .hero {
+            background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+            background-size: cover; background-position: center;
+            padding: 120px 0 100px; text-align: center;
+        }
+        .hero h1 { font-size: 3rem; margin-bottom: 20px; color: #fff; text-transform: uppercase; letter-spacing: 1px; line-height: 1.2; }
+        .hero p { font-size: 1.4rem; margin-bottom: 40px; color: #ddd; max-width: 800px; margin-left: auto; margin-right: auto; }
+        .hero span { color: var(--primary); }
+
+        /* --- PAIN POINTS (Маркетинг) --- */
+        .pain-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 40px; }
+        .pain-card { background: var(--bg-card); padding: 30px; border-radius: 12px; border-left: 4px solid #c0392b; }
+        .pain-card h3 { margin-bottom: 10px; color: #fff; }
+        .pain-card p { color: var(--text-muted); }
+
+        /* --- CALCULATOR STYLING (Стиль Версии 2 + ID Версии 1) --- */
+        .calc-section { background-color: #151515; }
+        .calc-wrapper {
+            background: #1e1e1e; padding: 40px; border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6); max-width: 700px; margin: 0 auto;
+            border: 1px solid #333; position: relative;
+        }
+        .calc-wrapper::before {
+            content: "DEMO VERSION"; position: absolute; top: 15px; right: 20px;
+            color: #444; font-weight: 900; font-size: 2rem; opacity: 0.2; pointer-events: none;
+        }
+        
+        .calc-group { margin-bottom: 25px; padding-bottom: 25px; border-bottom: 1px solid #333; }
+        .calc-group h3 { color: var(--secondary); margin-bottom: 15px; font-size: 1.2rem; text-transform: uppercase; }
+        
+        /* Grid for Inputs */
+        .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        @media(max-width: 600px) { .input-grid { grid-template-columns: 1fr; } }
+        
+        label { display: block; margin-bottom: 5px; font-size: 0.9rem; color: #bbb; }
+        
+        input[type="number"], input[type="text"] {
+            width: 100%; padding: 12px; background: #0a0a0a; border: 1px solid #444;
+            color: #fff; border-radius: 6px; font-size: 1rem; transition: 0.3s;
+        }
+        input:focus { border-color: var(--primary); outline: none; }
+        
+        /* Checkboxes */
+        .checkbox-row { display: flex; align-items: center; margin-top: 10px; cursor: pointer; }
+        input[type="checkbox"] { transform: scale(1.3); margin-right: 10px; accent-color: var(--primary); }
+        
+        /* LOCKED FIELDS STYLING */
+        .locked-wrapper { position: relative; opacity: 0.5; }
+        .locked-wrapper input { cursor: not-allowed; background: #222; }
+        .locked-wrapper::after {
+            content: "🔒 Только в приложении";
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-size: 0.7rem; color: var(--primary); background: rgba(0,0,0,0.8);
+            padding: 2px 6px; border-radius: 4px; white-space: nowrap; pointer-events: none;
+        }
+        .locked-checkbox { opacity: 0.5; cursor: not-allowed; }
+
+        /* RESULT AREA */
+        #priceDollar {
+            margin-top: 20px; padding: 20px; background: #1b261e;
+            border: 2px solid var(--success); border-radius: 8px;
+            color: var(--success); font-size: 1.5rem; font-weight: bold; text-align: center;
+        }
+
+        /* --- VIDEO & FEATURES (Структура Версии 1) --- */
+        .video-flex { display: flex; flex-wrap: wrap; gap: 40px; align-items: center; }
+        .video-box { flex: 1 1 500px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); border-radius: 10px; overflow: hidden; }
+        .video-box video { width: 100%; display: block; }
+        .features-box { flex: 1 1 400px; }
+        .features-list li { margin-bottom: 20px; display: flex; align-items: start; }
+        .features-list li::before { content: "✅"; margin-right: 15px; }
+
+        /* --- FAQ SECTION --- */
+        .faq-item { background: var(--bg-card); margin-bottom: 15px; border-radius: 8px; overflow: hidden; }
+        .faq-item summary { padding: 20px; cursor: pointer; font-weight: bold; background: #252525; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+        .faq-item summary::after { content: "+"; font-size: 1.5rem; color: var(--primary); }
+        .faq-item[open] summary::after { content: "-"; }
+        .faq-item p { padding: 20px; color: var(--text-muted); border-top: 1px solid #333; }
+
+        /* --- CTA FOOTER --- */
+        .cta-footer { background: linear-gradient(45deg, #1a1a1a, #000); text-align: center; padding: 100px 20px; }
+        .price-tag { font-size: 3.5rem; font-weight: 900; color: #fff; margin: 20px 0; }
+        
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .hero p { font-size: 1.1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HERO SECTION -->
+    <header class="hero">
+        <div class="container">
+            <h1>Перестань работать в минус</h1>
+            <p>Профессиональный <span>Токарный Калькулятор</span> для Android. <br>Рассчитай честную рыночную стоимость детали за 30 секунд прямо при заказчике.</p>
+            <a href="#demo" class="btn">Попробовать бесплатно</a>
+        </div>
+    </header>
+
+    <!-- PAIN POINTS -->
+    <section class="section">
+        <div class="container">
+            <h2 class="text-center">Знакомые ситуации?</h2>
+            <div class="pain-grid">
+                <div class="pain-card">
+                    <h3>😡 "Сколько стоит?"</h3>
+                    <p>Клиент стоит над душой и ждет цену. Вы нервничаете, называете сумму "на глаз" и часто ошибаетесь не в свою пользу.</p>
+                </div>
+                <div class="pain-card" style="border-left-color: var(--primary);">
+                    <h3>📉 Убыточные заказы</h3>
+                    <p>Взяли 500 рублей, а провозились 3 часа? Вы теряете деньги каждый раз, когда не учитываете сложность и материал.</p>
+                </div>
+                <div class="pain-card" style="border-left-color: var(--secondary);">
+                    <h3>🤨 Недоверие</h3>
+                    <p>Когда вы долго думаете над ценой, клиент думает, что вы её придумываете. Калькулятор дает обоснованную цифру мгновенно.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CALCULATOR DEMO (Original IDs Preserved) -->
+    <section class="section calc-section" id="demo">
+        <div class="container">
+            <h2 class="text-center" style="margin-bottom: 10px;">Онлайн Демо-версия</h2>
+            <p class="text-center" style="color: var(--text-muted); margin-bottom: 40px;">
+                Это ознакомительная версия. Скачайте приложение для доступа ко всем функциям.
+            </p>
+
+            <div class="calc-wrapper">
+                
+                <!-- БАЗОВЫЕ ЗНАЧЕНИЯ -->
+                <div class="calc-group">
+                    <h3>1. Базовые данные</h3>
+                    <label>Курс валюты (1$ = ?):</label>
+                    <input type="number" id="dollar" placeholder="Например: 90">
+                    
+                    <div class="input-grid" style="margin-top: 15px;">
+                        <div>
+                            <label>Диаметр (мм):</label>
+                            <input type="number" id="num1" placeholder="Ø заготовки">
+                        </div>
+                        <div>
+                            <label>Длина (мм):</label>
+                            <input type="number" id="num2" placeholder="L детали">
+                        </div>
+                    </div>
+
+                    <label class="checkbox-row">
+                        <input type="checkbox" id="check9" value=""/>
+                        <span>Нержавейка, Титан, HRC (Тяжелая обработка)</span>
+                    </label>
+                    
+                    <div style="margin-top: 15px;">
+                        <label>Стоимость материала ($):</label>
+                        <input type="number" id="num12" placeholder="Цена заготовки">
+                    </div>
+                </div>
+
+                <!-- ТОКАРКА -->
+                <div class="calc-group">
+                    <h3>2. Токарная обработка</h3>
+                    <div class="input-grid">
+                        <div>
+                            <label>Съем металла (мм):</label>
+                            <input type="number" id="num3" placeholder="Слой металла">
+                        </div>
+                        <div>
+                            <label>Проточка торца (ед):</label>
+                            <input type="number" id="num4" placeholder="Кол-во торцев">
+                        </div>
+                    </div>
+                    
+                    <!-- ЗАБЛОКИРОВАННЫЕ ПОЛЯ (Визуализация Premium) -->
+                    <div style="margin-top: 15px;" class="locked-wrapper">
+                        <label>Клиновидный шкив:</label>
+                        <input type="number" id="shkiv" placeholder="Сколько ручьев" disabled>
+                    </div>
+                </div>
+
+                <!-- ОТВЕРСТИЯ -->
+                <div class="calc-group">
+                    <h3>3. Отверстия</h3>
+                    <label>Сверлить/Расточить (мм):</label>
+                    <input type="number" id="num6" placeholder="Ø отверстия">
+                </div>
+
+                <!-- РЕЗЬБЫ (LOCKED) -->
+                <div class="calc-group">
+                    <h3>4. Резьбы (Только в приложении)</h3>
+                    <div class="input-grid">
+                        <div class="locked-wrapper">
+                            <label>Наружная резьба:</label>
+                            <input type="number" id="num8" disabled>
+                        </div>
+                        <div class="locked-wrapper">
+                            <label>Внутренняя резьба:</label>
+                            <input type="number" id="num7" disabled>
+                        </div>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <label class="checkbox-row locked-checkbox">
+                            <input type="checkbox" id="check10" disabled> <span>Коническая резьба</span>
+                        </label>
+                        <label class="checkbox-row locked-checkbox">
+                            <input type="checkbox" id="check11" disabled> <span>Трапеция / Ленточная</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- ДОП ОПЕРАЦИИ (LOCKED LIST) -->
+                <div class="calc-group">
+                    <h3>5. Дополнительные операции</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <label class="checkbox-row locked-checkbox"><input type="checkbox" id="check1" disabled> <span>Конус</span></label>
+                        <label class="checkbox-row locked-checkbox"><input type="checkbox" id="check2" disabled> <span>Канавка</span></label>
+                        <label class="checkbox-row locked-checkbox"><input type="checkbox" id="check3" disabled> <span>Неск. канавок</span></label>
+                        <label class="checkbox-row locked-checkbox"><input type="checkbox" id="check4" disabled> <span>Фаска</span></label>
+                        <label class="checkbox-row locked-checkbox"><input type="checkbox" id="check5" disabled> <span>Накатка</span></label>
+                        <label class="checkbox-row locked-checkbox"><input type="checkbox" id="check6" disabled> <span>Рад. отверстие</span></label>
+                        <label class="checkbox-row locked-checkbox"><input type="checkbox" id="check7" disabled> <span>4,6-гранник</span></label>
+                        <label class="checkbox-row locked-checkbox"><input type="checkbox" id="check8" disabled> <span>Лыска</span></label>
+                        <label class="checkbox-row locked-checkbox"><input type="checkbox" id="check12" disabled> <span>Заломыш</span></label>
+                    </div>
+                </div>
+
+                <!-- ОСТАЛЬНЫЕ ЗАБЛОКИРОВАННЫЕ -->
+                 <div class="calc-group">
+                    <div class="input-grid">
+                        <div class="locked-wrapper"><label>Шпонпаз кол-во:</label><input type="number" id="num24" disabled></div>
+                        <div class="locked-wrapper"><label>Высота шпонпаза:</label><input type="number" id="num10" disabled></div>
+                    </div>
+                    <div class="locked-wrapper" style="margin-top: 15px;"><label>Отрезка (мм):</label><input type="number" id="num11" disabled></div>
+                    <div style="margin-top: 15px;"><label>Квалитет:</label><input type="number" id="num14" placeholder="Точность"></div>
+                </div>
+
+                <div class="calc-group">
+                    <h3>6. Услуги (Слесарка/Сварка)</h3>
+                    <div class="input-grid">
+                        <div class="locked-wrapper"><label>Слесарка (час):</label><input type="number" id="slesarka" disabled></div>
+                        <div class="locked-wrapper"><label>Сварка (см):</label><input type="number" id="svarka" disabled></div>
+                        <div class="locked-wrapper"><label>Пресс (ед):</label><input type="number" id="press" disabled></div>
+                    </div>
+                     <label class="checkbox-row locked-checkbox" style="margin-top: 10px;">
+                        <input type="checkbox" id="term" disabled> <span>Термообработка</span>
+                    </label>
+                </div>
+
+                <!-- ИТОГ -->
+                <div style="background: #2c2c2c; padding: 20px; border-radius: 8px; border: 1px solid var(--primary);">
+                    <h3 style="color: #fff; text-transform: uppercase;">Расчет стоимости</h3>
+                    <label>Наценка / Скидка %:</label>
+                    <input type="number" id="num15" placeholder="-30 (скидка) или 30 (наценка)">
+
+                    <!-- BUTTON with Original Function Call -->
+                    <button id="click" class="btn" onclick="addDollar()" style="width: 100%; margin-top: 20px;">Рассчитать</button>
+                    
+                    <!-- Result Div -->
+                    <div id="priceDollar"></div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- VIDEO & FEATURES -->
+    <section class="section">
+        <div class="container">
+            <h2 class="text-center" style="margin-bottom: 50px;">Полная версия — ваш цифровой помощник</h2>
+            
+            <div class="video-flex">
+                <div class="video-box">
+                    <video controls poster="1.png">
+                        <source src="https://metalok.online/media/rolik.mp4" type="video/mp4">
+                        Ваш браузер не поддерживает видео.
+                    </video>
+                </div>
+                
+                <div class="features-box">
+                    <ul class="features-list">
+                        <li>
+                            <div>
+                                <h3>📶 Работает без Интернета</h3>
+                                <p>Приложение полностью автономно. Считайте в подвале, в гараже или в дороге.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div>
+                                <h3>⚙️ Все токарные операции</h3>
+                                <p>В полной версии разблокированы: Конуса, Резьбы (все типы), Шпонпазы, Накатка, Шкивы.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div>
+                                <h3>📊 Гибкая настройка</h3>
+                                <p>Задайте свой курс валюты или нормо-часа. Приложение подстроится под цены вашего региона.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div>
+                                <h3>🤝 Доверие клиента</h3>
+                                <p>Когда вы показываете расчет на экране, клиент видит, что цена не "с потолка". Это снимает вопросы.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ SECTION (Restored) -->
+    <section class="section" style="background: #181818;">
+        <div class="container">
+            <h2 class="text-center" style="margin-bottom: 40px;">Частые вопросы</h2>
+            <div style="max-width: 800px; margin: 0 auto;">
+                
+                <details class="faq-item">
+                    <summary>Откуда берутся цифры для расчета?</summary>
+                    <p>Цены усреднены по рынку на основе анализа форумов и сайтов услуг металлообработки. Вы можете корректировать итоговую цену полем "Наценка", подстраивая её под свой регион.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Сколько стоит и что я получу?</summary>
+                    <p>Цена приложения — <b>490 рублей</b>. Вы получаете APK-файл для установки на Android. Оплата разовая, доступ навсегда.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Нужно ли платить каждый месяц?</summary>
+                    <p><b>Нет.</b> Платеж единоразовый. Подписка в Telegram-боте на 30 дней нужна только для доступа к каналу скачивания. Само приложение работает вечно.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Будет ли работать на iPhone или ПК?</summary>
+                    <p>Нет, приложение разработано только для смартфонов и планшетов на базе <b>Android</b>.</p>
+                </details>
+
+                <details class="faq-item">
+                    <summary>Как обновлять приложение?</summary>
+                    <p>Все обновления выкладываются в закрытый Telegram-канал. Вы всегда сможете скачать свежую версию бесплатно.</p>
+                </details>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- FINAL CTA -->
+    <section class="cta-footer" id="buy">
+        <div class="container">
+            <h2 style="color: var(--primary);">Начни зарабатывать, а не гадать</h2>
+            <p>Цена одной ошибки в расчетах часто выше стоимости этого приложения.</p>
+            
+            <div class="price-tag">490 ₽</div>
+            
+            <center>
+                <button onclick="window.open('https://t.me/turner_calc_bot?start=dGFyaWZfNjA4MDcyt', '_blank')" class="btn-tg btn">
+                    <img src="tg.png" alt="TG">
+                    <span>Купить через Telegram</span>
+                </button>
+            </center>
+            
+            <p style="margin-top: 30px; font-size: 0.9rem; color: #666;">
+                <i>Уже скачали: 637 токарей</i> <br>
+                Оплата картой РФ или ЮMoney. Моментальный доступ.
+            </p>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container text-center">
+            <p>&copy; 2025 MetalOk.online</p>
+            <p style="font-size: 0.8rem; margin-top: 10px; color: #444;">Приложение является инструментом для предварительного расчета. Окончательная стоимость работ определяется мастером.</p>
+        </div>
+    </footer>
+
+    <!-- ПОДКЛЮЧЕНИЕ ВАШЕГО СКРИПТА (Обязательно должен лежать рядом) -->
+    <script src="index.js"></script>
+
+</body>
+</html>
