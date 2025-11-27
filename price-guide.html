@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO Meta Tags -->
+    <title>Как рассчитать стоимость токарных работ: методика и калькулятор | Metalok</title>
+    <meta name="description" content="Узнайте, как правильно формировать цену на токарные услуги. Из чего складывается стоимость детали, как учитывать материал, сложность и нормо-часы. Автоматический расчет цены.">
+    <meta name="keywords" content="токарные работы цена, расчет стоимости токарки, калькулятор токаря, сколько стоит выточить деталь, нормочас токарных работ">
+    
+    <!-- Open Graph for Social Media -->
+    <meta property="og:title" content="Сколько стоит токарка? Полный гайд по ценообразованию">
+    <meta property="og:description" content="Перестаньте называть цены с потолка. Методика расчета стоимости токарных работ для частных мастеров и цехов.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://metalok.online/price-guide.html">
+    <meta property="og:image" content="https://metalok.online/images/preview.jpg"> <!-- Замените на реальный путь к картинке -->
+
+    <!-- JSON-LD Structured Data (Schema.org) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Методика расчета стоимости токарных работ",
+      "author": {
+        "@type": "Organization",
+        "name": "Metalok"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Metalok",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://metalok.online/logo.png"
+        }
+      },
+      "description": "Руководство для токарей по расчету стоимости заказа: от материала до нормо-часа."
+    }
+    </script>
+
+    <style>
+        :root {
+            --primary-color: #e74c3c; /* Красный из видео */
+            --dark-bg: #2c3e50;
+            --text-color: #333;
+            --light-bg: #f9f9f9;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Header */
+        header {
+            background: var(--dark-bg);
+            color: white;
+            padding: 1rem 0;
+            text-align: center;
+        }
+
+        header a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://source.unsplash.com/1600x900/?lathe,metalwork'); /* Можно заменить на свое фото */
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 100px 20px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 30px;
+        }
+
+        /* Content Container */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        h2 {
+            color: var(--dark-bg);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+            margin-top: 40px;
+        }
+
+        h3 {
+            color: #444;
+            margin-top: 25px;
+        }
+
+        ul {
+            list-style-type: square;
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        /* Call to Action Block */
+        .cta-box {
+            background: var(--light-bg);
+            border: 2px solid var(--primary-color);
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            margin: 50px 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .btn-main {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background 0.3s;
+            margin-top: 15px;
+        }
+
+        .btn-main:hover {
+            background-color: #c0392b;
+        }
+
+        /* Example Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: var(--dark-bg);
+            color: white;
+        }
+
+        footer {
+            background: #222;
+            color: #aaa;
+            text-align: center;
+            padding: 20px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container" style="padding: 0;">
+            <a href="https://metalok.online/turner-calc/">Metalok.Online</a>
+        </div>
+    </header>
+
+    <section class="hero">
+        <h1>Сколько стоит токарная работа?</h1>
+        <p>Почему называть цену «на глаз» опасно, и как правильно рассчитать стоимость детали, чтобы не потерять клиента и заработать.</p>
+        <a href="#cta" class="btn-main">Перейти к калькулятору</a>
+    </section>
+
+    <div class="container">
+        <article>
+            <p>Каждый начинающий токарь сталкивается с дилеммой: клиент стоит над душой с эскизом (или ржавой деталью) и спрашивает: <strong>«Сколько это стоит и когда забрать?»</strong>.</p>
+            
+            <p>Если назвать цену наугад:</p>
+            <ul>
+                <li><strong>Назовете мало:</strong> сработаете в минус, учитывая износ инструмента и электричество.</li>
+                <li><strong>Назовете много:</strong> клиент уйдет к конкуренту.</li>
+            </ul>
+
+            <h2>Базовые принципы ценообразования в токарке</h2>
+            <p>Цена токарной обработки складывается не только из времени, которое вы провели у станка. Профессиональный расчет должен учитывать множество факторов, о которых часто забывают новички.</p>
+
+            <h3>1. Материал заготовки</h3>
+            <p>Обработка стали ст3, нержавейки (12Х18Н10Т) или титана требует разных режимов резания. То, что делается за 10 минут на «сыромятине», может занять час на каленой стали. Коэффициент сложности материала должен быть базовым множителем цены.</p>
+
+            <h3>2. Геометрия и габариты</h3>
+            <p>Здесь важен объем снимаемого металла. Проточить вал диаметром 20 мм и диаметром 250 мм — это разные нагрузки на станок и разный расход пластин. Учитывайте:</p>
+            <ul>
+                <li>Диаметр заготовки;</li>
+                <li>Длина обработки;</li>
+                <li>Глубина съема металла (черновая/чистовая).</li>
+            </ul>
+
+            <h3>3. Количество и тип операций</h3>
+            <p>Нельзя просто считать «время работы». Каждая операция имеет свою ценность:</p>
+            <table>
+                <tr>
+                    <th>Операция</th>
+                    <th>Сложность</th>
+                </tr>
+                <tr>
+                    <td>Проточка наружного диаметра</td>
+                    <td>Базовая</td>
+                </tr>
+                <tr>
+                    <td>Нарезка резьбы (метрическая/дюймовая)</td>
+                    <td>Высокая (риск брака)</td>
+                </tr>
+                <tr>
+                    <td>Расточка глухих отверстий</td>
+                    <td>Средняя</td>
+                </tr>
+                <tr>
+                    <td>Накатка рифления</td>
+                    <td>Специфическая</td>
+                </tr>
+            </table>
+
+            <h2>Региональный фактор и рынок</h2>
+            <p>В видео-обзорах часто упоминается, что «цена диктуется рынком». Это правда. Стоимость проточки тормозных дисков в Москве и в небольшом поселке будет отличаться в разы. </p>
+            <p><strong>Совет:</strong> узнайте средние цены по вашему городу (на Авито или в мастерских) и используйте их как «базовую ставку», к которой применяйте коэффициенты за срочность или сложность.</p>
+
+            <div id="cta" class="cta-box">
+                <h2>Устали считать вручную?</h2>
+                <p>Мы разработали приложение, которое учитывает все описанные выше факторы: материал, габариты, операции и даже курс валют. Сделайте расчет за 30 секунд прямо при клиенте.</p>
+                <p><strong>Функции:</strong> расчет по операциям, учет скидок/наценок, сохранение истории (чтобы вспомнить цену через полгода).</p>
+                <br>
+                <a href="https://metalok.online/turner-calc/" class="btn-main">Попробовать Токарный Калькулятор</a>
+                <p style="font-size: 0.9rem; margin-top: 15px; color: #666;">Доступно для Android устройств</p>
+            </div>
+
+            <h2>Почему важно фиксировать расчеты?</h2>
+            <p>Представьте ситуацию: вы сделали шпильку за 500 рублей. Клиент вернулся через год и просит такую же. Если вы назовете 700 (потому что цены выросли), он спросит «почему?». Если у вас нет сохраненного расчета, вы не сможете аргументировать подорожание. Использование цифровых инструментов позволяет вести архив заказов и выглядеть профессионалом в глазах заказчика.</p>
+
+            <h3>Частые ошибки при оценке стоимости:</h3>
+            <ul>
+                <li>Игнорирование стоимости оснастки (если под деталь нужно покупать спец. резец — это платит клиент).</li>
+                <li>Неучет времени на установку и базирование детали (setup time).</li>
+                <li>Забытая амортизация станка.</li>
+            </ul>
+        </article>
+    </div>
+
+    <footer>
+        <p>&copy; 2023-2025 Metalok Все права защищены.<br>
+        Инструменты для профессионалов металлообработки.</p>
+    </footer>
+
+</body>
+</html>
