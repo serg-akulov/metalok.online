@@ -57,6 +57,55 @@
             padding: 0 20px;
         }
 
+        .container1 {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* --- ГАЛЕРЕЯ ГРАФИКОВ --- */
+        .gallery-grid1 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+            margin-bottom: 80px;
+        }
+
+        .gallery-card1 {
+            background: var(--bg-card);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #333;
+            transition: 0.3s;
+        }
+
+        .gallery-card1:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+        }
+
+        .gallery-card1 img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .gallery-desc1 {
+            padding: 20px;
+        }
+
+        .gallery-desc1 h3 {
+            color: var(--primary);
+            margin: 0 0 10px 0;
+        }
+
+        .gallery-desc1 p {
+            margin: 0;
+            color: var(--text-sec);
+            font-size: 14px;
+        }
+
         .text-gradient {
             background: linear-gradient(135deg, var(--primary) 0%, #34d399 100%);
             -webkit-background-clip: text;
@@ -523,23 +572,23 @@
     </section>
 
         <!-- СЕКЦИЯ С ГРАФИКАМИ -->
-    <section class="container" style="margin-top: 20px;">
-        <h2 class="section-title">Сэкономь тысячи рублей на одной покупке</h2>
+    <section class="container1" style="margin-top: 20px;">
+        <h2 class="section-title1">Сэкономь тысячи рублей на одной покупке</h2>
         
-        <div class="gallery-grid">
+        <div class="gallery-grid1">
             <!-- График падения (файл graph_drop.png) -->
-            <div class="gallery-card">
+            <div class="gallery-card1">
                 <img src="graph_drop.png" alt="График падения цены">
-                <div class="gallery-desc">
+                <div class="gallery-desc1">
                     <h3>📉 Лови момент</h3>
                     <p>Наглядный пример: цена упала на 3500₽. Программа уведомит об этом мгновенно.</p>
                 </div>
             </div>
 
             <!-- График прогноза (файл graph_forecast.png) -->
-            <div class="gallery-card">
+            <div class="gallery-card1">
                 <img src="graph_forecast.png" alt="График прогноза цены">
-                <div class="gallery-desc">
+                <div class="gallery-desc1">
                     <h3>🤖 Не переплачивай</h3>
                     <p>ИИ анализирует тренд. Если цена растет (как на фото) — лучше подождать.</p>
                 </div>
