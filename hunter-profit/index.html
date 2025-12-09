@@ -484,6 +484,108 @@
             margin-bottom: 30px;
         }
 
+        /* --- SOCIAL SHARE SIDEBAR (NEW) --- */
+        .social-sidebar {
+            position: fixed;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .social-label {
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            transform: rotate(180deg);
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .social-btn {
+            width: 50px;
+            height: 50px;
+            background: rgba(24, 27, 33, 0.8);
+            border: 1px solid var(--border);
+            backdrop-filter: blur(5px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .social-btn:hover {
+            transform: scale(1.15) translateX(-5px);
+            box-shadow: 0 4px 20px rgba(0, 220, 130, 0.3);
+            border-color: var(--primary);
+            color: #fff;
+        }
+
+        /* Brand Colors on Hover */
+        .social-btn.tg:hover { background: #229ED9; border-color: #229ED9; }
+        .social-btn.vk:hover { background: #0077FF; border-color: #0077FF; }
+        .social-btn.wa:hover { background: #25D366; border-color: #25D366; }
+        .social-btn.cp:hover { background: var(--primary); border-color: var(--primary); color: #000; }
+
+        .social-btn svg { width: 22px; height: 22px; stroke-width: 2; fill: none; stroke: currentColor; }
+        
+        /* Tooltip styling */
+        .social-btn::before {
+            content: attr(data-tooltip);
+            position: absolute;
+            right: 65px;
+            background: var(--primary);
+            color: #000;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.2s;
+            pointer-events: none;
+        }
+
+        .social-btn:hover::before {
+            opacity: 1;
+            visibility: visible;
+            right: 60px;
+        }
+        
+        /* Notification for copy */
+        .copy-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--primary);
+            color: #000;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            transform: translateY(100px);
+            transition: transform 0.3s ease;
+            z-index: 10000;
+        }
+        .copy-notification.show { transform: translateY(0); }
+
+        /* Mobile Hide */
+        @media (max-width: 900px) {
+            .social-sidebar { display: none; }
+        }
+
         /* Mobile */
         @media (max-width: 768px) {
             .hero h1 { font-size: 2.5rem; }
@@ -805,6 +907,34 @@
         </div>
     </footer>
 
+    <!-- STYLISH SOCIAL SIDEBAR -->
+    <div class="social-sidebar">
+        <div class="social-label">SHARE</div>
+        
+        <!-- Telegram (Ключевая для перекупов) -->
+        <a class="social-btn tg" onclick="shareTo('tg')" data-tooltip="В Telegram">
+            <svg viewBox="0 0 24 24"><path d="M21.198 2.433a2.242 2.242 0 0 0-1.022.215l-8.609 3.33c-2.068.8-4.133 1.598-5.724 2.21a405.15 405.15 0 0 1-2.863 1.13l-4.75 1.887a.436.436 0 0 0-.115.776l6.948 2.89 1.613 5.927a.373.373 0 0 0 .729 0l2.428-5.907 7.502-3.056c.395-.16.853.033.993.435.066.19.04.4-.07.567L8.273 14.89l5.06 2.072 1.48.606c.62.253 1.314-.153 1.396-.815l2.468-13.305c.08-.44-.225-.875-.66-.993a2.15 2.15 0 0 0-.589-.08l-5.23 1.013V2.433h9.001z" fill="currentColor" stroke="none"></path><line x1="8.3" y1="12.8" x2="11.5" y2="18.5"></line></svg>
+        </a>
+
+        <!-- VK (Ключевая для СНГ) -->
+        <a class="social-btn vk" onclick="shareTo('vk')" data-tooltip="ВКонтакте">
+            <svg viewBox="0 0 24 24"><path d="M15 21c-4.4 0-7.8-3.2-8-8H7a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-2z" fill="none" stroke="currentColor"></path><text x="7.5" y="15" font-size="10" font-weight="bold" fill="currentColor" stroke="none">VK</text></svg>
+        </a>
+
+        <!-- WhatsApp -->
+        <a class="social-btn wa" onclick="shareTo('wa')" data-tooltip="WhatsApp">
+            <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+        </a>
+
+        <!-- Copy Link -->
+        <a class="social-btn cp" onclick="copyLink()" data-tooltip="Копировать">
+            <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+        </a>
+    </div>
+
+    <!-- Notification for copy -->
+    <div class="copy-notification" id="copyMsg">Ссылка скопирована!</div>
+
     <script>
         // FAQ Accordion
         document.querySelectorAll('.faq-question').forEach(item => {
@@ -823,6 +953,39 @@
                 });
             });
         });
+
+        // --- Social Share Logic ---
+        function shareTo(network) {
+            const url = encodeURIComponent(window.location.href);
+            const title = encodeURIComponent(document.title);
+            let shareUrl = '';
+
+            switch(network) {
+                case 'vk':
+                    shareUrl = `https://vk.com/share.php?url=${url}&title=${title}`;
+                    break;
+                case 'tg':
+                    shareUrl = `https://t.me/share/url?url=${url}&text=${title}`;
+                    break;
+                case 'wa':
+                    shareUrl = `https://api.whatsapp.com/send?text=${title}%20${url}`;
+                    break;
+            }
+
+            if (shareUrl) {
+                window.open(shareUrl, '_blank', 'width=600,height=400,scrollbars=no,resizable=no');
+            }
+        }
+
+        function copyLink() {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                const msg = document.getElementById('copyMsg');
+                msg.classList.add('show');
+                setTimeout(() => {
+                    msg.classList.remove('show');
+                }, 2000);
+            });
+        }
     </script>
 </body>
 </html>
