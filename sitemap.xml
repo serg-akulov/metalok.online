@@ -50,4 +50,11 @@
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="ru" href="https://metalok.ru/turner-calc/index.html" />
   </url>
+    <url>
+    <loc>https://metalok.online/hunter-profit/index.html</loc>
+    <lastmod>2025-12-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://metalok.online/hunter-profit/index.html" />
+  </url>
 </urlset>
