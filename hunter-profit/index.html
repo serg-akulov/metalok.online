@@ -484,7 +484,7 @@
             margin-bottom: 30px;
         }
 
-        /* --- SOCIAL SHARE SIDEBAR (NEW) --- */
+        /* --- SOCIAL SHARE SIDEBAR --- */
         .social-sidebar {
             position: fixed;
             top: 50%;
@@ -495,6 +495,42 @@
             flex-direction: column;
             gap: 15px;
             align-items: center;
+        }
+
+        /* STYLES FOR COUNTER */
+        .social-stat-box {
+            background: rgba(24, 27, 33, 0.9);
+            border: 1px solid rgba(0, 220, 130, 0.3);
+            backdrop-filter: blur(5px);
+            padding: 8px 5px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 5px;
+            width: 100%;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .social-stat-num {
+            color: var(--primary);
+            font-weight: 800;
+            font-size: 0.9rem;
+            line-height: 1;
+        }
+
+        .social-stat-label {
+            font-size: 0.55rem;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 3px;
+            opacity: 0.7;
         }
 
         .social-label {
@@ -909,7 +945,13 @@
 
     <!-- STYLISH SOCIAL SIDEBAR -->
     <div class="social-sidebar">
-        <div class="social-label">ПОДЕЛИТЬСЯ</div>
+        <!-- New Visual Counter -->
+        <div class="social-stat-box">
+            <div class="social-stat-num" id="shareCounter">1.2k</div>
+            <div class="social-stat-label">Shared</div>
+        </div>
+
+        <div class="social-label">SHARE</div>
         
         <!-- Telegram (Ключевая для перекупов) -->
         <a class="social-btn tg" onclick="shareTo('tg')" data-tooltip="В Telegram">
@@ -954,8 +996,48 @@
             });
         });
 
-        // --- Social Share Logic ---
+        // --- Social Share Logic with Visual Counter ---
+        
+        // Init counter
+        const counterElement = document.getElementById('shareCounter');
+        // Get stored count or generate a fake base number between 800 and 1500
+        let currentCount = localStorage.getItem('hp_share_count');
+        
+        if (!currentCount) {
+            currentCount = Math.floor(Math.random() * (1500 - 800 + 1) + 800);
+            localStorage.setItem('hp_share_count', currentCount);
+        }
+        
+        // Function to format numbers (e.g. 1200 -> 1.2k)
+        function formatCount(num) {
+            num = parseInt(num);
+            if(num >= 1000) {
+                return (num / 1000).toFixed(1) + 'k';
+            }
+            return num;
+        }
+
+        // Display initial count
+        counterElement.innerText = formatCount(currentCount);
+
+        function incrementCounter() {
+            let count = parseInt(localStorage.getItem('hp_share_count'));
+            count++;
+            localStorage.setItem('hp_share_count', count);
+            counterElement.innerText = formatCount(count);
+            
+            // Add a small "pop" animation effect
+            counterElement.style.transform = "scale(1.2)";
+            counterElement.style.color = "#fff";
+            setTimeout(() => {
+                counterElement.style.transform = "scale(1)";
+                counterElement.style.color = "var(--primary)";
+            }, 200);
+        }
+
         function shareTo(network) {
+            incrementCounter(); // Update visual counter
+
             const url = encodeURIComponent(window.location.href);
             const title = encodeURIComponent(document.title);
             let shareUrl = '';
@@ -978,6 +1060,8 @@
         }
 
         function copyLink() {
+            incrementCounter(); // Update visual counter
+            
             navigator.clipboard.writeText(window.location.href).then(() => {
                 const msg = document.getElementById('copyMsg');
                 msg.classList.add('show');
