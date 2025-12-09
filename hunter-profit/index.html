@@ -495,6 +495,7 @@
             flex-direction: column;
             gap: 15px;
             align-items: center;
+            transition: all 0.3s ease; /* Анимация при смене ориентации */
         }
 
         /* STYLES FOR COUNTER */
@@ -617,12 +618,70 @@
         }
         .copy-notification.show { transform: translateY(0); }
 
-        /* Mobile Hide */
+        /* --- MOBILE RESPONSIVE for Social Bar --- */
         @media (max-width: 900px) {
-            .social-sidebar { display: none; }
+            .social-sidebar {
+                /* Reset Desktop styles */
+                top: auto;
+                bottom: 25px; /* Отступ снизу */
+                right: auto;
+                left: 50%;
+                transform: translateX(-50%);
+                
+                /* Mobile Styles (Horizontal Pill) */
+                flex-direction: row;
+                gap: 12px;
+                
+                /* Glassmorphism Background for Pill */
+                background: rgba(15, 17, 21, 0.85);
+                backdrop-filter: blur(12px);
+                border: 1px solid var(--border);
+                border-radius: 50px;
+                padding: 10px 20px;
+                width: max-content;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            }
+
+            /* Hide the vertical text label on mobile */
+            .social-label { display: none; }
+
+            /* Adjust Counter Box for horizontal layout */
+            .social-stat-box {
+                margin-bottom: 0;
+                margin-right: 10px;
+                width: auto;
+                min-width: 60px;
+                padding: 5px 10px;
+                animation: none; /* Отключаем прыгание, чтобы не раздражало на маленьком экране */
+                border: 1px solid rgba(0, 220, 130, 0.15);
+                background: rgba(0,0,0,0.3);
+            }
+
+            .social-stat-num { font-size: 0.85rem; }
+            .social-stat-label { display: none; /* Скрываем слово Shared для экономии места */ }
+
+            /* Smaller buttons for mobile */
+            .social-btn {
+                width: 42px;
+                height: 42px;
+                box-shadow: none; /* Убираем тень кнопок, т.к. есть тень у плашки */
+                background: transparent; /* Прозрачный фон кнопок внутри плашки */
+                border-color: rgba(255,255,255,0.1);
+            }
+
+            .social-btn svg { width: 20px; height: 20px; }
+
+            /* Disable Tooltips on mobile (touch logic) */
+            .social-btn::before { display: none; }
+            
+            /* Reset Hover Transform for mobile to prevent glitches */
+            .social-btn:hover { transform: scale(1.1); }
+            
+            /* Add active state for touch feedback */
+            .social-btn:active { transform: scale(0.95); }
         }
 
-        /* Mobile */
+        /* Mobile Main Content adjustments */
         @media (max-width: 768px) {
             .hero h1 { font-size: 2.5rem; }
             .problem-solution { grid-template-columns: 1fr; }
@@ -630,6 +689,9 @@
             .price-card.popular { transform: none; }
             nav { flex-direction: column; gap: 20px; }
             .nav-links a { margin: 0 10px; }
+            
+            /* Ensure footer doesn't get covered by floating bar */
+            footer { padding-bottom: 100px; }
         }
     </style>
 </head>
