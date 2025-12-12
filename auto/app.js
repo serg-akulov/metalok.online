@@ -1,12 +1,10 @@
 const app = {
-    // === ДАННЫЕ ===
     data: {
         cars: [],
         currentCar: null,
         settings: {},
-        // ФЛАГ PRO ВЕРСИИ
-        // В реальном приложении при старте ты будешь проверять покупку через Android Interface
-        isPro: false 
+        // Берем статус сразу из конфига!
+        isPro: CONFIG.isProVersion 
     },
 
     defaultPrices: {
@@ -24,32 +22,37 @@ const app = {
     // === ИНИЦИАЛИЗАЦИЯ ===
     init() {
         this.loadData();
+        
+        // Если это PRO версия (собранная как PRO), то мы игнорируем localStorage
+        // и всегда считаем, что isPro = true
+        if (CONFIG.isProVersion) {
+            this.data.isPro = true;
+        } else {
+            // Если Free версия, проверяем, вдруг пользователь уже купил (если будем подключать SDK)
+            // Но в "серой" схеме это не нужно. Free всегда Free.
+            this.data.isPro = false;
+        }
+
         this.renderGarage();
         this.renderSettingsInputs();
-        this.updateProVisuals(); // Обновить вид иконок (замки)
+        this.updateProVisuals(); 
         
+        // Обработчики кликов (без изменений, но логика внутри меняется)
         const svgContainer = document.getElementById('car-svg');
         svgContainer.addEventListener('click', (e) => {
-            let target = e.target;
-            if(target.tagName === 'text') return;
-            if(target.tagName === 'svg' || target.id === 'car-svg') return;
-
-            const partId = target.id;
-            const partName = target.getAttribute('data-name');
-            const partType = target.getAttribute('data-type');
-            
+            // ... (поиск target)
             if (partId && partName) {
-                // ПРОВЕРКА PRO ДЛЯ УЗЛОВ
-                // Если это механика (mech) и у нас НЕ Pro версия
                 if (partType === 'mech' && !this.data.isPro) {
-                    this.showPaywall();
-                    return; // Прерываем выполнение
+                    this.showPaywall(); // Показываем окно "Иди в телегу"
+                    return; 
                 }
-
                 this.openSheet(partId, partName, partType);
             }
         });
     },
+
+    // ... (методы loadData, saveData, renderGarage без изменений)
+    // В методе createNewCar тоже проверяем !this.data.isPro
 
     // === УПРАВЛЕНИЕ ДАННЫМИ ===
     loadData() {
@@ -288,17 +291,14 @@ const app = {
     closePaywall() {
         document.getElementById('paywall').classList.remove('active');
     },
-    buyPro() {
-        // ЭМУЛЯЦИЯ ПОКУПКИ
-        // В WebView здесь будет вызов Android Interface
-        if(confirm('Эмуляция: Купить PRO версию?')) {
-            this.data.isPro = true;
-            localStorage.setItem('autoRevizor_isPro', 'true');
-            this.closePaywall();
-            this.updateProVisuals(); // Разблокируем иконки
-            alert('Спасибо за покупку! Теперь вам доступен безлимит и механика.');
-        }
-    },
+    
+    // Вместо buyPro() делаем переход
+    goToBuy() {
+        // Открываем Телеграм
+        window.open(CONFIG.buyLink, '_blank');
+        this.closePaywall();
+    }
+};
 
     // Навигация
     showGarage() {

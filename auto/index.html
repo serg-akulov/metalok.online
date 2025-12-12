@@ -131,21 +131,24 @@
     </div>
 </div>
 
+
 <!-- Paywall Modal -->
 <div class="paywall-overlay" id="paywall">
     <div class="paywall-card">
-        <div class="paywall-icon">💎</div>
-        <div class="paywall-title">Версия PRO</div>
+        <div class="paywall-icon">🔒</div>
+        <div class="paywall-title">Доступно в PRO</div>
         <div class="paywall-desc">
             В бесплатной версии доступна только 1 машина и осмотр кузова.
             <br><br>
-            Разблокируйте безлимит, осмотр двигателя, КПП и ходовой!
+            Чтобы разблокировать диагностику двигателя, КПП и безлимитный гараж — перейдите в полную версию.
         </div>
-        <button class="buy-btn" onclick="app.buyPro()">Купить за 199₽</button>
+        <!-- Кнопка ведет в ТГ -->
+        <button class="buy-btn" onclick="app.goToBuy()">Узнать подробнее</button>
         <button class="text-btn" onclick="app.closePaywall()" style="margin-top: 15px; color: #777;">Позже</button>
     </div>
 </div>
 
+<script src="config.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
