@@ -2,21 +2,22 @@ const app = {
     // === ДАННЫЕ ===
     data: {
         cars: [],
-        currentCar: null, // Объект редактируемого авто
-        settings: {}      // Прайс-лист
+        currentCar: null,
+        settings: {},
+        // ФЛАГ PRO ВЕРСИИ
+        // В реальном приложении при старте ты будешь проверять покупку через Android Interface
+        isPro: false 
     },
 
-    // Прайс по умолчанию (если пользователь не менял)
     defaultPrices: {
         'scratch': { label: 'Царапина', cost: 5000, icon: '⚡' },
         'dent': { label: 'Вмятина', cost: 10000, icon: '🔨' },
         'repaint': { label: 'Окрас/Ржавчина', cost: 8000, icon: '🎨' },
-        'light': { label: 'Мелкий ремонт', cost: 15000, icon: '⚠️' }, // Для механики
-        'heavy': { label: 'Капремонт/Замена', cost: 50000, icon: '🛑' }, // Для механики
+        'light': { label: 'Мелкий ремонт', cost: 15000, icon: '⚠️' },
+        'heavy': { label: 'Капремонт/Замена', cost: 50000, icon: '🛑' },
         'fatal': { label: 'Критично', cost: 100000, icon: '☠️' }
     },
 
-    // Опции для Кузова и Механики
     optionsBody: ['ok', 'scratch', 'dent', 'repaint'],
     optionsMech: ['ok', 'light', 'heavy', 'fatal'],
 
@@ -25,23 +26,26 @@ const app = {
         this.loadData();
         this.renderGarage();
         this.renderSettingsInputs();
+        this.updateProVisuals(); // Обновить вид иконок (замки)
         
-        // Слушаем клики по SVG деталям
         const svgContainer = document.getElementById('car-svg');
         svgContainer.addEventListener('click', (e) => {
-            // Ищем ближайший элемент с классом car-part или mech-part
             let target = e.target;
-            if(target.tagName === 'text') return; // Игнор текста
-            
-            // Если кликнули в svg, но не в деталь
+            if(target.tagName === 'text') return;
             if(target.tagName === 'svg' || target.id === 'car-svg') return;
 
-            // Обработка клика
             const partId = target.id;
             const partName = target.getAttribute('data-name');
-            const partType = target.getAttribute('data-type'); // body или mech
+            const partType = target.getAttribute('data-type');
             
             if (partId && partName) {
+                // ПРОВЕРКА PRO ДЛЯ УЗЛОВ
+                // Если это механика (mech) и у нас НЕ Pro версия
+                if (partType === 'mech' && !this.data.isPro) {
+                    this.showPaywall();
+                    return; // Прерываем выполнение
+                }
+
                 this.openSheet(partId, partName, partType);
             }
         });
@@ -49,17 +53,16 @@ const app = {
 
     // === УПРАВЛЕНИЕ ДАННЫМИ ===
     loadData() {
-        // Загрузка Гаража
         const storedGarage = localStorage.getItem('autoRevizor_garage');
         if (storedGarage) this.data.cars = JSON.parse(storedGarage);
 
-        // Загрузка Прайса (или дефолт)
         const storedSettings = localStorage.getItem('autoRevizor_settings');
-        if (storedSettings) {
-            this.data.settings = JSON.parse(storedSettings);
-        } else {
-            this.data.settings = JSON.parse(JSON.stringify(this.defaultPrices));
-        }
+        if (storedSettings) this.data.settings = JSON.parse(storedSettings);
+        else this.data.settings = JSON.parse(JSON.stringify(this.defaultPrices));
+
+        // Проверка статуса PRO (симуляция сохранения)
+        const proStatus = localStorage.getItem('autoRevizor_isPro');
+        if (proStatus === 'true') this.data.isPro = true;
     },
 
     saveData() {
@@ -67,12 +70,9 @@ const app = {
     },
 
     saveSettings() {
-        // Собираем данные из инпутов
         for (let key in this.data.settings) {
             const input = document.getElementById(`price-${key}`);
-            if (input) {
-                this.data.settings[key].cost = parseInt(input.value) || 0;
-            }
+            if (input) this.data.settings[key].cost = parseInt(input.value) || 0;
         }
         localStorage.setItem('autoRevizor_settings', JSON.stringify(this.data.settings));
         alert('Прайс сохранен!');
@@ -89,11 +89,11 @@ const app = {
             return;
         }
 
-        // Сортировка: новые сверху
         const sortedCars = [...this.data.cars].sort((a,b) => b.id - a.id);
 
         sortedCars.forEach(car => {
             const repairs = this.calculateRepairs(car.defects);
+            // Добавляем класс .locked, если пользователь превысил лимит (на случай если он перестал быть PRO)
             const card = document.createElement('div');
             card.className = 'car-card';
             card.innerHTML = `
@@ -102,17 +102,35 @@ const app = {
                     <p>Цена: ${parseInt(car.price || 0).toLocaleString()} ₽</p>
                 </div>
                 <div class="badge">-${repairs.toLocaleString()} ₽</div>
+                <button onclick="app.deleteCar(${car.id}, event)" style="background:none; border:none; color:#555; margin-left:10px; font-size:1.2rem;">×</button>
             `;
             listEl.appendChild(card);
         });
     },
 
+    // Добавил функцию удаления (полезно для тестов)
+    deleteCar(id, event) {
+        event.stopPropagation(); // Чтобы не открылась карточка
+        if(confirm('Удалить эту машину?')) {
+            this.data.cars = this.data.cars.filter(c => c.id !== id);
+            this.saveData();
+            this.renderGarage();
+        }
+    },
+
     createNewCar() {
+        // ПРОВЕРКА ЛИМИТА ГАРАЖА
+        // Если не ПРО и машин уже 1 или больше
+        if (!this.data.isPro && this.data.cars.length >= 1) {
+            this.showPaywall();
+            return;
+        }
+
         this.data.currentCar = {
             id: Date.now(),
             name: '',
             price: '',
-            defects: {} // { partId: 'type' }
+            defects: {}
         };
         this.resetEditor();
         this.showEditor();
@@ -121,10 +139,8 @@ const app = {
     editCar(id) {
         this.data.currentCar = this.data.cars.find(c => c.id === id);
         this.resetEditor();
-        // Заполняем поля
         document.getElementById('car-name').value = this.data.currentCar.name;
         document.getElementById('car-price').value = this.data.currentCar.price;
-        // Раскрашиваем SVG
         this.updateSvgColors();
         this.updateSummary();
         this.showEditor();
@@ -132,12 +148,9 @@ const app = {
 
     saveCurrentCar() {
         if (!this.data.currentCar) return;
-
-        // Берем данные из полей
         this.data.currentCar.name = document.getElementById('car-name').value;
         this.data.currentCar.price = document.getElementById('car-price').value;
 
-        // Если это новый авто (его нет в массиве), добавляем
         const exists = this.data.cars.find(c => c.id === this.data.currentCar.id);
         if (!exists) {
             this.data.cars.push(this.data.currentCar);
@@ -152,12 +165,24 @@ const app = {
     resetEditor() {
         document.getElementById('car-name').value = '';
         document.getElementById('car-price').value = '';
-        // Сброс цветов SVG
         document.querySelectorAll('.car-part, .mech-part').forEach(el => {
             el.removeAttribute('data-status');
         });
         document.getElementById('total-repair-cost').innerText = '0 ₽';
         document.getElementById('recommended-price').innerText = '0 ₽';
+        this.updateProVisuals();
+    },
+
+    // Обновляем визуальный вид иконок (замочки если не ПРО)
+    updateProVisuals() {
+        const mechParts = document.querySelectorAll('.mech-part');
+        mechParts.forEach(el => {
+            if (!this.data.isPro) {
+                el.classList.add('locked');
+            } else {
+                el.classList.remove('locked');
+            }
+        });
     },
 
     updateSvgColors() {
@@ -184,20 +209,17 @@ const app = {
         const sellerPrice = parseInt(document.getElementById('car-price').value) || 0;
         
         document.getElementById('total-repair-cost').innerText = totalCost.toLocaleString() + ' ₽';
-        
         let recPrice = sellerPrice - totalCost;
         if (recPrice < 0) recPrice = 0;
         document.getElementById('recommended-price').innerText = recPrice.toLocaleString() + ' ₽';
     },
 
-    // === UI ЛОГИКА (Шторка, Навигация) ===
-    
+    // === UI ЛОГИКА ===
     openSheet(partId, partName, partType) {
         document.getElementById('sheet-title').innerText = partName;
         const grid = document.getElementById('defect-options');
-        grid.innerHTML = ''; // Очистка
+        grid.innerHTML = ''; 
 
-        // Генерируем кнопки в зависимости от типа (кузов или механика)
         const options = partType === 'mech' ? this.optionsMech : this.optionsBody;
 
         options.forEach(type => {
@@ -212,12 +234,12 @@ const app = {
                 icon = conf.icon;
                 cost = conf.cost;
                 cssClass = (type === 'scratch' || type === 'light') ? 'warning' : 'danger';
-                if(type === 'repaint' || type === 'fatal') cssClass = 'info'; // Фиолетовый
+                if(type === 'repaint' || type === 'fatal') cssClass = 'info';
             }
 
             const btn = document.createElement('button');
             btn.className = `defect-btn ${cssClass}`;
-            btn.style.borderColor = (type !== 'ok') ? '' : '#22c55e'; // Зеленая рамка для ОК
+            btn.style.borderColor = (type !== 'ok') ? '' : '#22c55e';
             btn.innerHTML = `<span>${icon}</span>${label}<br><small>${type === 'ok' ? '' : cost + ' ₽'}</small>`;
             
             btn.onclick = () => {
@@ -236,14 +258,9 @@ const app = {
     },
 
     setDefect(partId, type) {
-        // Сохраняем в объект
-        if (type === 'ok') {
-            delete this.data.currentCar.defects[partId];
-        } else {
-            this.data.currentCar.defects[partId] = type;
-        }
+        if (type === 'ok') delete this.data.currentCar.defects[partId];
+        else this.data.currentCar.defects[partId] = type;
         
-        // Обновляем вид и цифры
         this.updateSvgColors();
         this.updateSummary();
         this.closeSheet();
@@ -252,7 +269,6 @@ const app = {
     renderSettingsInputs() {
         const list = document.getElementById('price-settings-list');
         list.innerHTML = '';
-        
         for (let key in this.data.settings) {
             const item = this.data.settings[key];
             const div = document.createElement('div');
@@ -265,10 +281,29 @@ const app = {
         }
     },
 
+    // === PAYWALL И ПОКУПКА ===
+    showPaywall() {
+        document.getElementById('paywall').classList.add('active');
+    },
+    closePaywall() {
+        document.getElementById('paywall').classList.remove('active');
+    },
+    buyPro() {
+        // ЭМУЛЯЦИЯ ПОКУПКИ
+        // В WebView здесь будет вызов Android Interface
+        if(confirm('Эмуляция: Купить PRO версию?')) {
+            this.data.isPro = true;
+            localStorage.setItem('autoRevizor_isPro', 'true');
+            this.closePaywall();
+            this.updateProVisuals(); // Разблокируем иконки
+            alert('Спасибо за покупку! Теперь вам доступен безлимит и механика.');
+        }
+    },
+
     // Навигация
     showGarage() {
         this.switchView('view-garage');
-        this.renderGarage(); // Обновить список при возврате
+        this.renderGarage();
     },
     showEditor() { this.switchView('view-editor'); },
     showSettings() { this.switchView('view-settings'); },
@@ -279,9 +314,7 @@ const app = {
     }
 };
 
-// Запуск при старте
 document.addEventListener('DOMContentLoaded', () => {
     app.init();
-    // Live update for calculations when price input changes
     document.getElementById('car-price').addEventListener('input', () => app.updateSummary());
 });

@@ -131,6 +131,21 @@
     </div>
 </div>
 
+<!-- Paywall Modal -->
+<div class="paywall-overlay" id="paywall">
+    <div class="paywall-card">
+        <div class="paywall-icon">💎</div>
+        <div class="paywall-title">Версия PRO</div>
+        <div class="paywall-desc">
+            В бесплатной версии доступна только 1 машина и осмотр кузова.
+            <br><br>
+            Разблокируйте безлимит, осмотр двигателя, КПП и ходовой!
+        </div>
+        <button class="buy-btn" onclick="app.buyPro()">Купить за 199₽</button>
+        <button class="text-btn" onclick="app.closePaywall()" style="margin-top: 15px; color: #777;">Позже</button>
+    </div>
+</div>
+
 <script src="app.js"></script>
 </body>
 </html>

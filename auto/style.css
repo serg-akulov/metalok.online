@@ -173,3 +173,37 @@ circle[data-status="heavy"] { fill: var(--danger); stroke: var(--danger); }
 .setting-item label { display: block; margin-bottom: 5px; color: var(--text-muted); font-size: 0.9rem; }
 .primary-btn { width: 100%; padding: 15px; background: var(--accent); color: white; border: none; border-radius: 10px; font-size: 1rem; font-weight: bold; margin-top: 10px;}
 .hint { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 20px; background: var(--input-bg); padding: 10px; border-radius: 8px; }
+
+/* --- PRO Features Styles --- */
+
+/* Модальное окно "Купи Pro" */
+.paywall-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8); z-index: 100;
+    display: none; justify-content: center; align-items: center;
+    backdrop-filter: blur(5px);
+}
+.paywall-overlay.active { display: flex; }
+
+.paywall-card {
+    background: linear-gradient(135deg, #1e1e1e, #2a2a2a);
+    padding: 30px; border-radius: 20px; text-align: center;
+    border: 1px solid var(--accent);
+    box-shadow: 0 0 30px rgba(59, 130, 246, 0.3);
+    width: 80%; max-width: 300px;
+}
+.paywall-icon { font-size: 3rem; margin-bottom: 15px; }
+.paywall-title { font-size: 1.5rem; font-weight: bold; margin-bottom: 10px; color: #fff; }
+.paywall-desc { color: #aaa; margin-bottom: 20px; font-size: 0.9rem; line-height: 1.5; }
+.buy-btn {
+    background: var(--accent); color: white; border: none;
+    padding: 15px 30px; border-radius: 50px; font-weight: bold; font-size: 1.1rem;
+    width: 100%; cursor: pointer;
+    box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+}
+
+/* Визуальная блокировка PRO узлов на схеме (опционально) */
+.mech-part.locked {
+    opacity: 0.5;
+    stroke: #555; /* Серый цвет вместо синего */
+}
