@@ -3,319 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>AutoInspektor Demo</title>
-    <style>
-        :root {
-            --bg: #121212;
-            --card: #1e1e1e;
-            --accent: #3b82f6;
-            --text: #ffffff;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --success: #22c55e;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        /* Header */
-        header {
-            background-color: var(--card);
-            padding: 15px;
-            text-align: center;
-            font-weight: bold;
-            border-bottom: 1px solid #333;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .status-bar {
-            font-size: 12px;
-            color: #888;
-        }
-
-        /* Main Content */
-        main {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-            position: relative;
-        }
-
-        h2 { font-size: 1.2rem; margin-top: 0; }
-        p { color: #aaa; font-size: 0.9rem; }
-
-        /* Car Map Container */
-        .car-container {
-            position: relative;
-            width: 100%;
-            height: 400px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* SVG Styles */
-        svg {
-            height: 100%;
-            width: auto;
-            max-width: 100%;
-            filter: drop-shadow(0 0 10px rgba(59, 130, 246, 0.2));
-        }
-
-        .car-part {
-            fill: #333;
-            stroke: #555;
-            stroke-width: 2;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .car-part:hover { fill: #444; }
-        .car-part.selected { stroke: #fff; }
-        
-        /* Defect Colors */
-        .car-part[data-status="ok"] { fill: #333; }
-        .car-part[data-status="scratch"] { fill: var(--warning); fill-opacity: 0.6; }
-        .car-part[data-status="dent"] { fill: var(--danger); fill-opacity: 0.6; }
-        .car-part[data-status="repaint"] { fill: #8b5cf6; fill-opacity: 0.6; }
-
-        /* Modal / Bottom Sheet */
-        .bottom-sheet {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background-color: var(--card);
-            border-top-left-radius: 20px;
-            border-top-right-radius: 20px;
-            padding: 20px;
-            box-sizing: border-box;
-            transform: translateY(100%);
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
-            z-index: 100;
-        }
-
-        .bottom-sheet.active {
-            transform: translateY(0);
-        }
-
-        .sheet-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        
-        .sheet-title { font-weight: bold; font-size: 1.1rem; }
-        .close-sheet { background: none; border: none; color: #888; font-size: 1.5rem; cursor: pointer;}
-
-        /* Defect Buttons */
-        .defect-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .defect-btn {
-            background: #2a2a2a;
-            border: 1px solid #444;
-            color: #fff;
-            padding: 15px;
-            border-radius: 12px;
-            font-size: 0.9rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .defect-btn.danger { border-color: var(--danger); color: var(--danger); }
-        .defect-btn.warning { border-color: var(--warning); color: var(--warning); }
-        .defect-btn.info { border-color: #8b5cf6; color: #8b5cf6; }
-        .defect-btn.success { border-color: var(--success); color: var(--success); }
-
-        .defect-btn:active { transform: scale(0.98); }
-
-        /* Footer Info */
-        .summary-bar {
-            background: #111;
-            padding: 15px;
-            border-top: 1px solid #333;
-            display: flex;
-            justify-content: space-between;
-        }
-        
-        .price-impact { color: var(--danger); font-weight: bold; }
-
-    </style>
+    <title>AutoRevizor</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<header>
-    <div>AutoRevizor</div>
-    <div class="status-bar">Toyota Camry</div>
-</header>
+<!-- Экран: ГАРАЖ (Главная) -->
+<section id="view-garage" class="view active">
+    <header>
+        <h1>Гараж</h1>
+        <button class="icon-btn" onclick="app.showSettings()">⚙️ Прайс</button>
+    </header>
+    <main>
+        <div id="garage-list" class="garage-list">
+            <!-- Сюда JS будет добавлять карточки -->
+            <div class="empty-state">Гараж пуст. <br>Нажмите +, чтобы добавить авто.</div>
+        </div>
+    </main>
+    <button class="fab" onclick="app.createNewCar()">+</button>
+</section>
 
-<main>
-    <h2>Осмотр кузова</h2>
-    <p>Нажимайте на детали, чтобы отметить повреждения.</p>
+<!-- Экран: НАСТРОЙКИ (Прайс) -->
+<section id="view-settings" class="view">
+    <header>
+        <button class="icon-btn" onclick="app.showGarage()">← Назад</button>
+        <h1>Прайс ремонта</h1>
+    </header>
+    <main>
+        <p class="hint">Укажите среднюю стоимость устранения дефектов в вашем регионе. Это влияет на расчет торга.</p>
+        <div id="price-settings-list" class="settings-list">
+            <!-- Генерируется JS -->
+        </div>
+        <button class="primary-btn" onclick="app.saveSettings()">Сохранить прайс</button>
+    </main>
+</section>
 
-    <div class="car-container">
-        <!-- Схематичный SVG автомобиля (вид сверху) -->
-        <svg viewBox="0 0 200 400" xmlns="http://www.w3.org/2000/svg">
-            <!-- Капот -->
-            <path id="hood" class="car-part" d="M30,80 Q100,60 170,80 L170,140 Q100,130 30,140 Z" data-name="Капот"></path>
-            <!-- Крыша -->
-            <path id="roof" class="car-part" d="M35,145 L165,145 L165,240 L35,240 Z" data-name="Крыша"></path>
-            <!-- Багажник -->
-            <path id="trunk" class="car-part" d="M35,245 L165,245 L165,290 Q100,300 35,290 Z" data-name="Багажник"></path>
-            <!-- Лобовое -->
-            <path id="windshield" class="car-part" style="fill: #222;" d="M35,140 Q100,130 165,140 L165,145 L35,145 Z" data-name="Лобовое"></path>
-            
-            <!-- Левое переднее крыло -->
-            <path id="lf-fender" class="car-part" d="M30,80 L30,140 L10,140 Q10,100 30,80 Z" data-name="Лев. Пер. Крыло"></path>
-            <!-- Правое переднее крыло -->
-            <path id="rf-fender" class="car-part" d="M170,80 L170,140 L190,140 Q190,100 170,80 Z" data-name="Прав. Пер. Крыло"></path>
-            
-            <!-- Левые двери -->
-            <path id="l-doors" class="car-part" d="M10,145 L30,145 L30,240 L10,240 Z" data-name="Левые Двери"></path>
-            <!-- Правые двери -->
-            <path id="r-doors" class="car-part" d="M190,145 L170,145 L170,240 L190,240 Z" data-name="Правые Двери"></path>
-
-            <!-- Задний бампер -->
-            <path id="r-bumper" class="car-part" d="M35,290 Q100,300 165,290 L165,310 Q100,330 35,310 Z" data-name="Задний бампер"></path>
-        </svg>
+<!-- Экран: ОСМОТР (Редактор) -->
+<section id="view-editor" class="view">
+    <header>
+        <button class="icon-btn" onclick="app.showGarage()">← Отмена</button>
+        <h1>Осмотр</h1>
+        <button class="text-btn" onclick="app.saveCurrentCar()">Сохранить</button>
+    </header>
+    
+    <div class="car-info-inputs">
+        <input type="text" id="car-name" placeholder="Название (напр. BMW X5)" autocomplete="off">
+        <input type="number" id="car-price" placeholder="Цена продавца (₽)" autocomplete="off">
     </div>
-</main>
 
-<!-- Bottom Sheet Interface -->
+    <main class="editor-main">
+        <div class="car-container">
+            <svg viewBox="0 0 240 480" xmlns="http://www.w3.org/2000/svg" id="car-svg">
+                <!-- ГРУППА: КУЗОВ -->
+                <g id="body-parts">
+                    <!-- Бампера -->
+                    <path id="f-bumper" class="car-part" d="M40,60 Q120,30 200,60 L200,80 Q120,70 40,80 Z" data-name="Передний бампер" data-type="body"></path>
+                    <path id="r-bumper" class="car-part" d="M40,400 Q120,410 200,400 L200,420 Q120,440 40,420 Z" data-name="Задний бампер" data-type="body"></path>
+                    
+                    <!-- Капот и Багажник -->
+                    <path id="hood" class="car-part" d="M40,80 L200,80 L190,150 Q120,140 50,150 Z" data-name="Капот" data-type="body"></path>
+                    <path id="trunk" class="car-part" d="M50,330 Q120,320 190,330 L200,400 L40,400 Z" data-name="Багажник" data-type="body"></path>
+                    
+                    <!-- Крыша -->
+                    <path id="roof" class="car-part" d="M55,200 L185,200 L185,280 L55,280 Z" data-name="Крыша" data-type="body"></path>
+                    
+                    <!-- Крылья -->
+                    <path id="lf-fender" class="car-part" d="M40,80 L50,150 L20,150 L20,80 Z" data-name="Лев. Пер. Крыло" data-type="body"></path>
+                    <path id="rf-fender" class="car-part" d="M200,80 L220,80 L220,150 L190,150 Z" data-name="Прав. Пер. Крыло" data-type="body"></path>
+                    <path id="lr-fender" class="car-part" d="M20,330 L50,330 L40,400 L20,400 Z" data-name="Лев. Зад. Крыло" data-type="body"></path>
+                    <path id="rr-fender" class="car-part" d="M190,330 L220,330 L220,400 L200,400 Z" data-name="Прав. Зад. Крыло" data-type="body"></path>
+
+                    <!-- Двери -->
+                    <path id="lf-door" class="car-part" d="M20,152 L55,152 L55,238 L20,238 Z" data-name="Вод. Дверь" data-type="body"></path>
+                    <path id="rf-door" class="car-part" d="M220,152 L185,152 L185,238 L220,238 Z" data-name="Прав. Пер. Дверь" data-type="body"></path>
+                    <path id="lr-door" class="car-part" d="M20,240 L55,240 L55,328 L20,328 Z" data-name="Лев. Зад. Дверь" data-type="body"></path>
+                    <path id="rr-door" class="car-part" d="M220,240 L185,240 L185,328 L220,328 Z" data-name="Прав. Зад. Дверь" data-type="body"></path>
+
+                    <!-- Стекла -->
+                    <path id="windshield" class="glass-part" d="M50,150 Q120,140 190,150 L185,200 L55,200 Z" fill="#222"></path>
+                    <path id="rear-glass" class="glass-part" d="M55,280 L185,280 L190,330 Q120,320 50,330 Z" fill="#222"></path>
+                </g>
+
+                <!-- ГРУППА: МЕХАНИКА И УЗЛЫ (Иконки) -->
+                <g id="mech-parts">
+                    <!-- Двигатель (Круг на капоте) -->
+                    <circle id="engine" class="mech-part" cx="120" cy="110" r="15" data-name="Двигатель" data-type="mech"></circle>
+                    <text x="120" y="114" text-anchor="middle" fill="#fff" font-size="10" pointer-events="none">E</text>
+
+                    <!-- Коробка/Трансмиссия (Центр) -->
+                    <circle id="gearbox" class="mech-part" cx="120" cy="180" r="12" data-name="КПП / Трансмиссия" data-type="mech"></circle>
+                    <text x="120" y="184" text-anchor="middle" fill="#fff" font-size="10" pointer-events="none">G</text>
+
+                    <!-- Салон (Над сиденьем) -->
+                    <circle id="interior" class="mech-part" cx="120" cy="250" r="12" data-name="Салон" data-type="mech"></circle>
+                    <text x="120" y="254" text-anchor="middle" fill="#fff" font-size="10" pointer-events="none">S</text>
+
+                    <!-- Ходовая (У колес) -->
+                    <circle id="suspension" class="mech-part" cx="120" cy="360" r="15" data-name="Ходовая часть" data-type="mech"></circle>
+                    <text x="120" y="364" text-anchor="middle" fill="#fff" font-size="10" pointer-events="none">W</text>
+                </g>
+            </svg>
+        </div>
+    </main>
+    
+    <!-- Футер с итогами -->
+    <div class="summary-footer">
+        <div class="summary-row">
+            <span>Вложения:</span>
+            <span class="cost-value" id="total-repair-cost">0 ₽</span>
+        </div>
+        <div class="summary-row highlight">
+            <span>Рекомендация:</span>
+            <span class="final-price" id="recommended-price">0 ₽</span>
+        </div>
+    </div>
+</section>
+
+<!-- Шторка выбора дефектов -->
+<div class="bottom-sheet-overlay" id="sheet-overlay" onclick="app.closeSheet()"></div>
 <div class="bottom-sheet" id="sheet">
     <div class="sheet-header">
-        <span class="sheet-title" id="part-title">Деталь</span>
-        <button class="close-sheet" onclick="closeSheet()">×</button>
+        <span class="sheet-title" id="sheet-title">Деталь</span>
+        <button class="close-sheet" onclick="app.closeSheet()">×</button>
     </div>
-    <div class="defect-grid">
-        <button class="defect-btn success" onclick="setDefect('ok')">
-            <span>✅</span>
-            Целая
-        </button>
-        <button class="defect-btn warning" onclick="setDefect('scratch')">
-            <span>⚡</span>
-            Царапина
-        </button>
-        <button class="defect-btn danger" onclick="setDefect('dent')">
-            <span>🔨</span>
-            Вмятина
-        </button>
-        <button class="defect-btn info" onclick="setDefect('repaint')">
-            <span>🎨</span>
-            Окрас
-        </button>
+    <div class="defect-grid" id="defect-options">
+        <!-- Кнопки генерируются JS в зависимости от типа детали -->
     </div>
 </div>
 
-<div class="summary-bar">
-    <div>Повреждений: <span id="defect-count">0</span></div>
-    <div class="price-impact">Торг: <span id="bargain-amount">0</span> ₽</div>
-</div>
-
-<script>
-    // State
-    let currentPartId = null;
-    const defects = {}; // { 'hood': 'dent', 'roof': 'ok' }
-    
-    // Config: Стоимость устранения (для примера)
-    const prices = {
-        'ok': 0,
-        'scratch': 5000,
-        'dent': 10000,
-        'repaint': 8000
-    };
-
-    // DOM Elements
-    const sheet = document.getElementById('sheet');
-    const partTitle = document.getElementById('part-title');
-    const parts = document.querySelectorAll('.car-part');
-    const countEl = document.getElementById('defect-count');
-    const bargainEl = document.getElementById('bargain-amount');
-
-    // Event Listeners for SVG Parts
-    parts.forEach(part => {
-        part.addEventListener('click', function() {
-            currentPartId = this.id;
-            const name = this.getAttribute('data-name');
-            
-            // Highlight active part visually (optional logic could go here)
-            
-            openSheet(name);
-        });
-    });
-
-    function openSheet(name) {
-        partTitle.innerText = name;
-        sheet.classList.add('active');
-    }
-
-    function closeSheet() {
-        sheet.classList.remove('active');
-        currentPartId = null;
-    }
-
-    function setDefect(type) {
-        if (!currentPartId) return;
-
-        const partEl = document.getElementById(currentPartId);
-        
-        // Save state
-        defects[currentPartId] = type;
-        
-        // Update Visuals
-        partEl.setAttribute('data-status', type);
-        
-        // Update Calculations
-        recalcSummary();
-        
-        closeSheet();
-    }
-
-    function recalcSummary() {
-        let count = 0;
-        let totalBargain = 0;
-
-        for (let key in defects) {
-            const type = defects[key];
-            if (type !== 'ok') {
-                count++;
-                totalBargain += prices[type];
-            }
-        }
-
-        countEl.innerText = count;
-        bargainEl.innerText = totalBargain.toLocaleString();
-    }
-
-    // Close sheet when clicking outside (on the SVG background)
-    document.querySelector('.car-container').addEventListener('click', (e) => {
-        if(e.target.tagName !== 'path') {
-            closeSheet();
-        }
-    });
-
-</script>
-
+<script src="app.js"></script>
 </body>
 </html>
