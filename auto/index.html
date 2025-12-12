@@ -8,144 +8,126 @@
 </head>
 <body>
 
-<!-- Экран: ГАРАЖ (Главная) -->
+<!-- Экран: ГАРАЖ -->
 <section id="view-garage" class="view active">
     <header>
         <h1>Гараж</h1>
-        <button class="icon-btn" onclick="app.showSettings()">⚙️ Прайс</button>
+        <!-- Кнопка Сравнить (скрыта, пока не выбрано 2 авто) -->
+        <button class="text-btn" id="compare-btn" onclick="app.startComparison()" style="display:none; color: var(--success)">Сравнить</button>
+        <button class="icon-btn" onclick="app.showSettings()">⚙️</button>
     </header>
     <main>
-        <div id="garage-list" class="garage-list">
-            <!-- Сюда JS будет добавлять карточки -->
-            <div class="empty-state">Гараж пуст. <br>Нажмите +, чтобы добавить авто.</div>
-        </div>
+        <div id="garage-list" class="garage-list"></div>
     </main>
     <button class="fab" onclick="app.createNewCar()">+</button>
 </section>
 
-<!-- Экран: НАСТРОЙКИ (Прайс) -->
+<!-- Экран: СРАВНЕНИЕ -->
+<section id="view-compare" class="view">
+    <header>
+        <button class="icon-btn" onclick="app.showGarage()">← Назад</button>
+        <h1>Сравнение</h1>
+    </header>
+    <!-- Контейнер с горизонтальным скроллом -->
+    <div class="compare-container" id="compare-content">
+        <!-- JS сюда вставит колонки -->
+    </div>
+</section>
+
+<!-- Экран: НАСТРОЙКИ -->
 <section id="view-settings" class="view">
     <header>
         <button class="icon-btn" onclick="app.showGarage()">← Назад</button>
         <h1>Прайс ремонта</h1>
     </header>
-    <main>
-        <p class="hint">Укажите среднюю стоимость устранения дефектов в вашем регионе. Это влияет на расчет торга.</p>
-        <div id="price-settings-list" class="settings-list">
-            <!-- Генерируется JS -->
-        </div>
-        <button class="primary-btn" onclick="app.saveSettings()">Сохранить прайс</button>
+    <main style="padding: 20px;">
+        <p class="hint">Цены влияют на расчет торга.</p>
+        <div id="price-settings-list" class="settings-list"></div>
+        <button class="primary-btn" onclick="app.saveSettings()">Сохранить</button>
     </main>
 </section>
 
-<!-- Экран: ОСМОТР (Редактор) -->
+<!-- Экран: ОСМОТР -->
 <section id="view-editor" class="view">
     <header>
         <button class="icon-btn" onclick="app.showGarage()">← Отмена</button>
         <h1>Осмотр</h1>
-        <button class="text-btn" onclick="app.saveCurrentCar()">Сохранить</button>
+        <button class="text-btn" onclick="app.saveCurrentCar()">Готово</button>
     </header>
     
     <div class="car-info-inputs">
         <input type="text" id="car-name" placeholder="Название (напр. BMW X5)" autocomplete="off">
+        <input type="text" id="car-vin" class="vin-input" placeholder="VIN Код" autocomplete="off" maxlength="17">
         <input type="number" id="car-price" placeholder="Цена продавца (₽)" autocomplete="off">
     </div>
 
     <main class="editor-main">
         <div class="car-container">
             <svg viewBox="0 0 240 480" xmlns="http://www.w3.org/2000/svg" id="car-svg">
-                <!-- ГРУППА: КУЗОВ -->
+                <!-- КУЗОВ -->
                 <g id="body-parts">
-                    <!-- Бампера -->
-                    <path id="f-bumper" class="car-part" d="M40,60 Q120,30 200,60 L200,80 Q120,70 40,80 Z" data-name="Передний бампер" data-type="body"></path>
-                    <path id="r-bumper" class="car-part" d="M40,400 Q120,410 200,400 L200,420 Q120,440 40,420 Z" data-name="Задний бампер" data-type="body"></path>
-                    
-                    <!-- Капот и Багажник -->
+                    <path id="f-bumper" class="car-part" d="M40,60 Q120,30 200,60 L200,80 Q120,70 40,80 Z" data-name="Пер. Бампер" data-type="body"></path>
+                    <path id="r-bumper" class="car-part" d="M40,400 Q120,410 200,400 L200,420 Q120,440 40,420 Z" data-name="Зад. Бампер" data-type="body"></path>
                     <path id="hood" class="car-part" d="M40,80 L200,80 L190,150 Q120,140 50,150 Z" data-name="Капот" data-type="body"></path>
                     <path id="trunk" class="car-part" d="M50,330 Q120,320 190,330 L200,400 L40,400 Z" data-name="Багажник" data-type="body"></path>
-                    
-                    <!-- Крыша -->
                     <path id="roof" class="car-part" d="M55,200 L185,200 L185,280 L55,280 Z" data-name="Крыша" data-type="body"></path>
-                    
-                    <!-- Крылья -->
-                    <path id="lf-fender" class="car-part" d="M40,80 L50,150 L20,150 L20,80 Z" data-name="Лев. Пер. Крыло" data-type="body"></path>
-                    <path id="rf-fender" class="car-part" d="M200,80 L220,80 L220,150 L190,150 Z" data-name="Прав. Пер. Крыло" data-type="body"></path>
-                    <path id="lr-fender" class="car-part" d="M20,330 L50,330 L40,400 L20,400 Z" data-name="Лев. Зад. Крыло" data-type="body"></path>
-                    <path id="rr-fender" class="car-part" d="M190,330 L220,330 L220,400 L200,400 Z" data-name="Прав. Зад. Крыло" data-type="body"></path>
-
-                    <!-- Двери -->
-                    <path id="lf-door" class="car-part" d="M20,152 L55,152 L55,238 L20,238 Z" data-name="Вод. Дверь" data-type="body"></path>
-                    <path id="rf-door" class="car-part" d="M220,152 L185,152 L185,238 L220,238 Z" data-name="Прав. Пер. Дверь" data-type="body"></path>
-                    <path id="lr-door" class="car-part" d="M20,240 L55,240 L55,328 L20,328 Z" data-name="Лев. Зад. Дверь" data-type="body"></path>
-                    <path id="rr-door" class="car-part" d="M220,240 L185,240 L185,328 L220,328 Z" data-name="Прав. Зад. Дверь" data-type="body"></path>
-
-                    <!-- Стекла -->
+                    <path id="lf-fender" class="car-part" d="M40,80 L50,150 L20,150 L20,80 Z" data-name="Лев.Пер.Крыло" data-type="body"></path>
+                    <path id="rf-fender" class="car-part" d="M200,80 L220,80 L220,150 L190,150 Z" data-name="Прав.Пер.Крыло" data-type="body"></path>
+                    <path id="lr-fender" class="car-part" d="M20,330 L50,330 L40,400 L20,400 Z" data-name="Лев.Зад.Крыло" data-type="body"></path>
+                    <path id="rr-fender" class="car-part" d="M190,330 L220,330 L220,400 L200,400 Z" data-name="Прав.Зад.Крыло" data-type="body"></path>
+                    <path id="lf-door" class="car-part" d="M20,152 L55,152 L55,238 L20,238 Z" data-name="Лев.Пер.Дверь" data-type="body"></path>
+                    <path id="rf-door" class="car-part" d="M220,152 L185,152 L185,238 L220,238 Z" data-name="Прав.Пер.Дверь" data-type="body"></path>
+                    <path id="lr-door" class="car-part" d="M20,240 L55,240 L55,328 L20,328 Z" data-name="Лев.Зад.Дверь" data-type="body"></path>
+                    <path id="rr-door" class="car-part" d="M220,240 L185,240 L185,328 L220,328 Z" data-name="Прав.Зад.Дверь" data-type="body"></path>
                     <path id="windshield" class="glass-part" d="M50,150 Q120,140 190,150 L185,200 L55,200 Z" fill="#222"></path>
                     <path id="rear-glass" class="glass-part" d="M55,280 L185,280 L190,330 Q120,320 50,330 Z" fill="#222"></path>
                 </g>
-
-                <!-- ГРУППА: МЕХАНИКА И УЗЛЫ (Иконки) -->
+                <!-- МЕХАНИКА -->
                 <g id="mech-parts">
-                    <!-- Двигатель (Круг на капоте) -->
                     <circle id="engine" class="mech-part" cx="120" cy="110" r="15" data-name="Двигатель" data-type="mech"></circle>
                     <text x="120" y="114" text-anchor="middle" fill="#fff" font-size="10" pointer-events="none">E</text>
 
-                    <!-- Коробка/Трансмиссия (Центр) -->
-                    <circle id="gearbox" class="mech-part" cx="120" cy="180" r="12" data-name="КПП / Трансмиссия" data-type="mech"></circle>
+                    <circle id="gearbox" class="mech-part" cx="120" cy="180" r="12" data-name="КПП" data-type="mech"></circle>
                     <text x="120" y="184" text-anchor="middle" fill="#fff" font-size="10" pointer-events="none">G</text>
 
-                    <!-- Салон (Над сиденьем) -->
                     <circle id="interior" class="mech-part" cx="120" cy="250" r="12" data-name="Салон" data-type="mech"></circle>
                     <text x="120" y="254" text-anchor="middle" fill="#fff" font-size="10" pointer-events="none">S</text>
 
-                    <!-- Ходовая (У колес) -->
-                    <circle id="suspension" class="mech-part" cx="120" cy="360" r="15" data-name="Ходовая часть" data-type="mech"></circle>
+                    <circle id="suspension" class="mech-part" cx="120" cy="360" r="15" data-name="Ходовая" data-type="mech"></circle>
                     <text x="120" y="364" text-anchor="middle" fill="#fff" font-size="10" pointer-events="none">W</text>
                 </g>
             </svg>
         </div>
     </main>
     
-    <!-- Футер с итогами -->
     <div class="summary-footer">
-        <div class="summary-row">
-            <span>Вложения:</span>
-            <span class="cost-value" id="total-repair-cost">0 ₽</span>
-        </div>
-        <div class="summary-row highlight">
-            <span>Рекомендация:</span>
-            <span class="final-price" id="recommended-price">0 ₽</span>
-        </div>
+        <div class="summary-row"><span>Вложения:</span> <span class="cost-value" id="total-repair-cost">0 ₽</span></div>
+        <div class="summary-row highlight"><span>Рекомендация:</span> <span class="final-price" id="recommended-price">0 ₽</span></div>
     </div>
 </section>
 
-<!-- Шторка выбора дефектов -->
+<!-- Шторка Дефектов -->
 <div class="bottom-sheet-overlay" id="sheet-overlay" onclick="app.closeSheet()"></div>
 <div class="bottom-sheet" id="sheet">
     <div class="sheet-header">
         <span class="sheet-title" id="sheet-title">Деталь</span>
         <button class="close-sheet" onclick="app.closeSheet()">×</button>
     </div>
-    <div class="defect-grid" id="defect-options">
-        <!-- Кнопки генерируются JS в зависимости от типа детали -->
-    </div>
+    <div class="defect-grid" id="defect-options"></div>
 </div>
 
-
-<!-- Paywall Modal -->
-<div class="paywall-overlay" id="paywall">
-    <div class="paywall-card">
-        <div class="paywall-icon">🔒</div>
-        <div class="paywall-title">Доступно в PRO</div>
-        <div class="paywall-desc">
-            В бесплатной версии доступна только 1 машина и осмотр кузова.
-            <br><br>
-            Чтобы разблокировать диагностику двигателя, КПП и безлимитный гараж — перейдите в полную версию.
-        </div>
-        <!-- Кнопка ведет в ТГ -->
-        <button class="buy-btn" onclick="app.goToBuy()">Узнать подробнее</button>
-        <button class="text-btn" onclick="app.closePaywall()" style="margin-top: 15px; color: #777;">Позже</button>
+<!-- PAYWALL (Предложение купить) -->
+<div class="bottom-sheet-overlay" id="paywall-overlay"></div>
+<div class="paywall-card" id="paywall-card">
+    <div class="paywall-icon">💎</div>
+    <div class="paywall-title">Купить PRO</div>
+    <div class="paywall-desc">
+        В бесплатной версии доступна только 1 машина и осмотр кузова.
+        <br><br>
+        В PRO версии: Сравнение авто, безлимитный гараж, осмотр двигателя, КПП и ходовой.
     </div>
+    <button class="buy-btn" onclick="app.openProLink()">Перейти в RuStore</button>
+    <button class="text-btn" onclick="app.closePaywall()" style="margin-top: 15px; color: #777;">Позже</button>
 </div>
 
 <script src="config.js"></script>

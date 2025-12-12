@@ -3,8 +3,8 @@ const app = {
         cars: [],
         currentCar: null,
         settings: {},
-        // Берем статус сразу из конфига!
-        isPro: CONFIG.isProVersion 
+        isPro: CONFIG.isProVersion,
+        selectedCars: new Set() // Храним ID выбранных для сравнения машин
     },
 
     defaultPrices: {
@@ -19,42 +19,18 @@ const app = {
     optionsBody: ['ok', 'scratch', 'dent', 'repaint'],
     optionsMech: ['ok', 'light', 'heavy', 'fatal'],
 
-    // === ИНИЦИАЛИЗАЦИЯ ===
     init() {
         this.loadData();
-        
-        // Если это PRO версия (собранная как PRO), то мы игнорируем localStorage
-        // и всегда считаем, что isPro = true
-        if (CONFIG.isProVersion) {
-            this.data.isPro = true;
-        } else {
-            // Если Free версия, проверяем, вдруг пользователь уже купил (если будем подключать SDK)
-            // Но в "серой" схеме это не нужно. Free всегда Free.
-            this.data.isPro = false;
-        }
-
         this.renderGarage();
         this.renderSettingsInputs();
-        this.updateProVisuals(); 
+        this.updateProVisuals();
         
-        // Обработчики кликов (без изменений, но логика внутри меняется)
         const svgContainer = document.getElementById('car-svg');
-        svgContainer.addEventListener('click', (e) => {
-            // ... (поиск target)
-            if (partId && partName) {
-                if (partType === 'mech' && !this.data.isPro) {
-                    this.showPaywall(); // Показываем окно "Иди в телегу"
-                    return; 
-                }
-                this.openSheet(partId, partName, partType);
-            }
-        });
+        if (svgContainer) {
+            svgContainer.addEventListener('click', (e) => this.handleSvgClick(e));
+        }
     },
 
-    // ... (методы loadData, saveData, renderGarage без изменений)
-    // В методе createNewCar тоже проверяем !this.data.isPro
-
-    // === УПРАВЛЕНИЕ ДАННЫМИ ===
     loadData() {
         const storedGarage = localStorage.getItem('autoRevizor_garage');
         if (storedGarage) this.data.cars = JSON.parse(storedGarage);
@@ -62,10 +38,6 @@ const app = {
         const storedSettings = localStorage.getItem('autoRevizor_settings');
         if (storedSettings) this.data.settings = JSON.parse(storedSettings);
         else this.data.settings = JSON.parse(JSON.stringify(this.defaultPrices));
-
-        // Проверка статуса PRO (симуляция сохранения)
-        const proStatus = localStorage.getItem('autoRevizor_isPro');
-        if (proStatus === 'true') this.data.isPro = true;
     },
 
     saveData() {
@@ -82,48 +54,140 @@ const app = {
         this.showGarage();
     },
 
-    // === ГАРАЖ ===
+    // --- GARAGE LOGIC ---
     renderGarage() {
         const listEl = document.getElementById('garage-list');
+        const compareBtn = document.getElementById('compare-btn');
         listEl.innerHTML = '';
 
         if (this.data.cars.length === 0) {
             listEl.innerHTML = '<div class="empty-state">Гараж пуст.<br>Нажмите +, чтобы добавить авто.</div>';
+            compareBtn.style.display = 'none';
             return;
         }
 
+        // Показываем кнопку сравнения, если выбрано >= 2
+        compareBtn.style.display = this.data.selectedCars.size >= 2 ? 'block' : 'none';
+        compareBtn.innerText = `Сравнить (${this.data.selectedCars.size})`;
+
+        // Сортировка: новые сверху
         const sortedCars = [...this.data.cars].sort((a,b) => b.id - a.id);
 
         sortedCars.forEach(car => {
             const repairs = this.calculateRepairs(car.defects);
-            // Добавляем класс .locked, если пользователь превысил лимит (на случай если он перестал быть PRO)
+            const isSelected = this.data.selectedCars.has(car.id);
+            
             const card = document.createElement('div');
             card.className = 'car-card';
+            
+            // HTML Карточки
             card.innerHTML = `
-                <div onclick="app.editCar(${car.id})">
+                <div class="car-select ${isSelected ? 'selected' : ''}" onclick="app.toggleSelection(${car.id}, event)"></div>
+                <div class="car-info" onclick="app.editCar(${car.id})">
                     <h3>${car.name || 'Без названия'}</h3>
+                    <span class="vin-tag">${car.vin || 'VIN не указан'}</span>
                     <p>Цена: ${parseInt(car.price || 0).toLocaleString()} ₽</p>
                 </div>
-                <div class="badge">-${repairs.toLocaleString()} ₽</div>
-                <button onclick="app.deleteCar(${car.id}, event)" style="background:none; border:none; color:#555; margin-left:10px; font-size:1.2rem;">×</button>
+                <div class="badge">-${repairs.toLocaleString()}</div>
+                <button class="delete-btn" onclick="app.deleteCar(${car.id}, event)">×</button>
             `;
             listEl.appendChild(card);
         });
     },
 
-    // Добавил функцию удаления (полезно для тестов)
+    // Выбор чекбокса
+    toggleSelection(id, event) {
+        event.stopPropagation();
+        if (this.data.selectedCars.has(id)) {
+            this.data.selectedCars.delete(id);
+        } else {
+            this.data.selectedCars.add(id);
+        }
+        this.renderGarage();
+    },
+
+    startComparison() {
+        if (this.data.selectedCars.size < 2) return;
+        
+        const container = document.getElementById('compare-content');
+        container.innerHTML = '';
+        
+        // Получаем объекты выбранных машин
+        const carsToCompare = this.data.cars.filter(c => this.data.selectedCars.has(c.id));
+        
+        // Ищем лучшее предложение (минимальная итоговая цена)
+        let bestPrice = Infinity;
+        let bestCarId = null;
+        
+        carsToCompare.forEach(car => {
+            const repairs = this.calculateRepairs(car.defects);
+            const sellerPrice = parseInt(car.price) || 0;
+            const final = sellerPrice - repairs > 0 ? sellerPrice - repairs : 0; // На самом деле нам важна рекомендация или просто выгодность. 
+            // Обычно сравнивают "Цену покупки". Но здесь логика:
+            // "Итоговая цена" (рекомендация) - это за сколько мы хотим купить.
+            // Но выгодность для покупателя - это (Цена Продавца - Скидка) + Ремонт?
+            // Давай упростим: Лучшее предложение = Минимальная цена продавца (если ремонты одинаковы) или Лучшее соотношение.
+            // Давай подсветим ту, где "Рекомендованная цена" МИНИМАЛЬНА (т.е. мы собьем цену ниже всего).
+            
+            if (final < bestPrice && final > 0) {
+                bestPrice = final;
+                bestCarId = car.id;
+            }
+        });
+
+        carsToCompare.forEach(car => {
+            const repairs = this.calculateRepairs(car.defects);
+            const sellerPrice = parseInt(car.price) || 0;
+            const final = sellerPrice - repairs > 0 ? sellerPrice - repairs : 0;
+            const defectsCount = Object.keys(car.defects).length;
+            
+            const isBest = car.id === bestCarId;
+            
+            const col = document.createElement('div');
+            col.className = `compare-column ${isBest ? 'best' : ''}`;
+            
+            col.innerHTML = `
+                ${isBest ? '<div class="best-badge">TOP ЦЕНА</div>' : ''}
+                <div class="c-header">
+                    <span class="c-name">${car.name || 'Без названия'}</span>
+                    <span class="c-vin">${car.vin || '---'}</span>
+                </div>
+                
+                <div class="c-row">
+                    <span class="c-label">Продавец:</span>
+                    <span class="c-val">${sellerPrice.toLocaleString()} ₽</span>
+                </div>
+                 <div class="c-row">
+                    <span class="c-label">Вложения:</span>
+                    <span class="c-val red">-${repairs.toLocaleString()} ₽</span>
+                </div>
+                 <div class="c-row">
+                    <span class="c-label">Дефектов:</span>
+                    <span class="c-val">${defectsCount} шт.</span>
+                </div>
+                
+                <div style="margin-top:auto; padding-top:10px; border-top:1px dashed #333">
+                    <div class="c-label">Рекомендуем предложить:</div>
+                    <div class="c-val green">${final.toLocaleString()} ₽</div>
+                </div>
+            `;
+            container.appendChild(col);
+        });
+        
+        this.switchView('view-compare');
+    },
+
     deleteCar(id, event) {
-        event.stopPropagation(); // Чтобы не открылась карточка
+        event.stopPropagation();
         if(confirm('Удалить эту машину?')) {
             this.data.cars = this.data.cars.filter(c => c.id !== id);
+            this.data.selectedCars.delete(id); // Удаляем из выбранных
             this.saveData();
             this.renderGarage();
         }
     },
 
     createNewCar() {
-        // ПРОВЕРКА ЛИМИТА ГАРАЖА
-        // Если не ПРО и машин уже 1 или больше
         if (!this.data.isPro && this.data.cars.length >= 1) {
             this.showPaywall();
             return;
@@ -132,6 +196,7 @@ const app = {
         this.data.currentCar = {
             id: Date.now(),
             name: '',
+            vin: '', // Добавили VIN
             price: '',
             defects: {}
         };
@@ -143,6 +208,7 @@ const app = {
         this.data.currentCar = this.data.cars.find(c => c.id === id);
         this.resetEditor();
         document.getElementById('car-name').value = this.data.currentCar.name;
+        document.getElementById('car-vin').value = this.data.currentCar.vin || ''; // Загрузка VIN
         document.getElementById('car-price').value = this.data.currentCar.price;
         this.updateSvgColors();
         this.updateSummary();
@@ -152,6 +218,7 @@ const app = {
     saveCurrentCar() {
         if (!this.data.currentCar) return;
         this.data.currentCar.name = document.getElementById('car-name').value;
+        this.data.currentCar.vin = document.getElementById('car-vin').value.toUpperCase(); // Сохраняем VIN
         this.data.currentCar.price = document.getElementById('car-price').value;
 
         const exists = this.data.cars.find(c => c.id === this.data.currentCar.id);
@@ -164,28 +231,41 @@ const app = {
         this.showGarage();
     },
 
-    // === РЕДАКТОР И SVG ===
+    // --- EDITOR LOGIC ---
     resetEditor() {
         document.getElementById('car-name').value = '';
+        document.getElementById('car-vin').value = '';
         document.getElementById('car-price').value = '';
-        document.querySelectorAll('.car-part, .mech-part').forEach(el => {
-            el.removeAttribute('data-status');
-        });
+        document.querySelectorAll('[data-status]').forEach(el => el.removeAttribute('data-status'));
         document.getElementById('total-repair-cost').innerText = '0 ₽';
         document.getElementById('recommended-price').innerText = '0 ₽';
         this.updateProVisuals();
     },
 
-    // Обновляем визуальный вид иконок (замочки если не ПРО)
     updateProVisuals() {
         const mechParts = document.querySelectorAll('.mech-part');
         mechParts.forEach(el => {
-            if (!this.data.isPro) {
-                el.classList.add('locked');
-            } else {
-                el.classList.remove('locked');
-            }
+            if (!this.data.isPro) el.classList.add('locked');
+            else el.classList.remove('locked');
         });
+    },
+
+    handleSvgClick(e) {
+        let target = e.target;
+        if(target.tagName === 'text') return; 
+        if(target.tagName === 'svg' || target.id === 'car-svg') return;
+
+        const partId = target.id;
+        const partName = target.getAttribute('data-name');
+        const partType = target.getAttribute('data-type');
+        
+        if (partId && partName) {
+            if (partType === 'mech' && !this.data.isPro) {
+                this.showPaywall();
+                return;
+            }
+            this.openSheet(partId, partName, partType);
+        }
     },
 
     updateSvgColors() {
@@ -217,7 +297,7 @@ const app = {
         document.getElementById('recommended-price').innerText = recPrice.toLocaleString() + ' ₽';
     },
 
-    // === UI ЛОГИКА ===
+    // --- UI HELPERS ---
     openSheet(partId, partName, partType) {
         document.getElementById('sheet-title').innerText = partName;
         const grid = document.getElementById('defect-options');
@@ -245,9 +325,7 @@ const app = {
             btn.style.borderColor = (type !== 'ok') ? '' : '#22c55e';
             btn.innerHTML = `<span>${icon}</span>${label}<br><small>${type === 'ok' ? '' : cost + ' ₽'}</small>`;
             
-            btn.onclick = () => {
-                this.setDefect(partId, type);
-            };
+            btn.onclick = () => this.setDefect(partId, type);
             grid.appendChild(btn);
         });
 
@@ -284,27 +362,21 @@ const app = {
         }
     },
 
-    // === PAYWALL И ПОКУПКА ===
+    // --- PAYWALL / NAVIGATION ---
     showPaywall() {
-        document.getElementById('paywall').classList.add('active');
+        document.getElementById('paywall-overlay').classList.add('active');
+        document.getElementById('paywall-card').classList.add('active');
     },
     closePaywall() {
-        document.getElementById('paywall').classList.remove('active');
+        document.getElementById('paywall-overlay').classList.remove('active');
+        document.getElementById('paywall-card').classList.remove('active');
     },
-    
-    // Вместо buyPro() делаем переход
-    goToBuy() {
-        // Открываем Телеграм
-        window.open(CONFIG.buyLink, '_blank');
+    openProLink() {
+        window.open(CONFIG.proAppUrl, '_blank');
         this.closePaywall();
-    }
-};
-
-    // Навигация
-    showGarage() {
-        this.switchView('view-garage');
-        this.renderGarage();
     },
+
+    showGarage() { this.switchView('view-garage'); this.renderGarage(); },
     showEditor() { this.switchView('view-editor'); },
     showSettings() { this.switchView('view-settings'); },
 

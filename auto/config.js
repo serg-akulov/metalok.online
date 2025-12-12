@@ -1,10 +1,8 @@
 const CONFIG = {
-    // true = Полная версия (для продажи)
-    // false = Free версия (для RuStore)
+    // true = Полная версия (АвтоРевизор PRO)
+    // false = Бесплатная версия (АвтоРевизор Lite)
     isProVersion: false, 
-    
-    // Куда вести пользователя при клике на замок в Free версии
-    // Вариант А (Если есть RuStore платежи): '' (оставим пустым, обработаем в коде)
-    // Вариант Б (Серый метод): Ссылка на Telegram
-    buyLink: 'https://t.me/ТВОЙ_НИК_ИЛИ_БОТ' 
+
+    // Ссылка на PRO версию в RuStore (замени, когда опубликуешь)
+    proAppUrl: 'https://apps.rustore.ru/app/com.yourname.autorevizor.pro' 
 };

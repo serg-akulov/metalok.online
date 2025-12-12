@@ -19,7 +19,8 @@ body {
     padding: 0;
     height: 100vh;
     overflow: hidden;
-    user-select: none; /* Чтобы не выделялся текст при кликах */
+    user-select: none; 
+    -webkit-tap-highlight-color: transparent;
 }
 
 /* Views Management */
@@ -47,32 +48,38 @@ header {
     box-sizing: border-box;
 }
 h1 { font-size: 1.2rem; margin: 0; }
-.icon-btn, .text-btn { background: none; border: none; color: var(--accent); font-size: 1rem; cursor: pointer; }
+.icon-btn, .text-btn { background: none; border: none; color: var(--accent); font-size: 1rem; cursor: pointer; padding: 5px; }
 .text-btn { font-weight: bold; }
 
 /* Inputs */
 .car-info-inputs {
-    padding: 10px;
+    padding: 15px;
     background: var(--card);
     display: flex;
+    flex-direction: column; /* Изменили на колонку для VIN */
     gap: 10px;
+    border-bottom: 1px solid var(--border);
 }
+.input-row { display: flex; gap: 10px; }
 input {
     background: var(--input-bg);
     border: 1px solid var(--border);
     color: #fff;
     padding: 10px;
     border-radius: 8px;
-    width: 100%;
     font-size: 1rem;
     outline: none;
+    width: 100%;
+    box-sizing: border-box;
 }
+.vin-input { font-family: monospace; letter-spacing: 1px; text-transform: uppercase; }
 
 /* Garage List */
 .garage-list {
     padding: 20px;
     overflow-y: auto;
     height: 100%;
+    padding-bottom: 80px; /* Место под FAB */
 }
 .car-card {
     background: var(--card);
@@ -81,21 +88,50 @@ input {
     margin-bottom: 15px;
     border: 1px solid var(--border);
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    position: relative;
+    transition: background 0.2s;
 }
-.car-card h3 { margin: 0 0 5px 0; font-size: 1.1rem; }
-.car-card p { margin: 0; color: var(--text-muted); font-size: 0.9rem; }
+.car-card:active { background: #252525; }
+
+/* Checkbox */
+.car-select {
+    width: 24px; height: 24px;
+    margin-right: 15px;
+    border: 2px solid var(--text-muted);
+    border-radius: 6px;
+    display: flex; justify-content: center; align-items: center;
+    cursor: pointer;
+}
+.car-select.selected {
+    background: var(--accent);
+    border-color: var(--accent);
+}
+.car-select.selected::after {
+    content: '✓'; color: #fff; font-size: 16px; font-weight: bold;
+}
+
+.car-info { flex: 1; overflow: hidden; }
+.car-info h3 { margin: 0 0 5px 0; font-size: 1.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.car-info p { margin: 0; color: var(--text-muted); font-size: 0.9rem; }
+.car-info .vin-tag { font-size: 0.75rem; color: #666; font-family: monospace; margin-top: 2px; display: block;}
+
 .car-card .badge { 
     background: var(--input-bg); 
     padding: 5px 10px; 
     border-radius: 20px; 
     font-size: 0.8rem; 
     color: var(--danger);
+    margin-left: 10px;
+}
+.delete-btn {
+    background: none; border: none; color: #666; 
+    font-size: 1.5rem; margin-left: 10px; padding: 0 5px;
+    cursor: pointer;
 }
 .empty-state { text-align: center; color: var(--text-muted); margin-top: 50px; line-height: 1.5; }
 
-/* FAB (Floating Action Button) */
+/* FAB */
 .fab {
     position: absolute;
     bottom: 30px; right: 30px;
@@ -108,23 +144,62 @@ input {
     box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
     cursor: pointer;
     display: flex; align-items: center; justify-content: center;
+    z-index: 30;
 }
+
+/* Compare View */
+.compare-container {
+    flex: 1;
+    overflow-x: auto; /* Горизонтальный скролл */
+    padding: 20px;
+    display: flex;
+    gap: 15px;
+}
+.compare-column {
+    min-width: 200px;
+    max-width: 250px;
+    background: var(--card);
+    border-radius: 15px;
+    border: 1px solid var(--border);
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+}
+.compare-column.best {
+    border: 2px solid var(--success);
+    box-shadow: 0 0 15px rgba(34, 197, 94, 0.2);
+}
+.best-badge {
+    position: absolute; top: -10px; right: 10px;
+    background: var(--success); color: #fff;
+    padding: 4px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: bold;
+}
+.c-header { border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 5px; }
+.c-name { font-weight: bold; font-size: 1.1rem; margin-bottom: 5px; display: block; }
+.c-vin { font-family: monospace; font-size: 0.8rem; color: var(--text-muted); background: var(--input-bg); padding: 3px; border-radius: 4px; }
+.c-row { display: flex; justify-content: space-between; font-size: 0.9rem; }
+.c-label { color: var(--text-muted); }
+.c-val { font-weight: bold; }
+.c-val.red { color: var(--danger); }
+.c-val.green { color: var(--success); font-size: 1.1rem; }
 
 /* Editor Main */
 .editor-main { flex: 1; position: relative; overflow-y: auto; padding: 20px 0; }
 .car-container { height: 100%; display: flex; justify-content: center; align-items: center; }
-svg { height: 90%; max-width: 100%; filter: drop-shadow(0 0 10px rgba(0,0,0,0.5)); }
+svg { height: 95%; max-width: 100%; filter: drop-shadow(0 0 10px rgba(0,0,0,0.5)); }
 
 /* SVG Styling */
 .car-part { fill: #2a2a2a; stroke: #444; stroke-width: 1.5; transition: fill 0.2s; cursor: pointer; }
 .mech-part { fill: var(--card); stroke: var(--accent); stroke-width: 2; cursor: pointer; }
+.mech-part.locked { opacity: 0.4; stroke: #555; }
 
-/* Status Colors in SVG */
+/* Status Colors */
 [data-status="ok"] { fill: #2a2a2a; }
 [data-status="scratch"], [data-status="light"] { fill: var(--warning); fill-opacity: 0.8; }
 [data-status="dent"], [data-status="heavy"] { fill: var(--danger); fill-opacity: 0.8; }
 [data-status="repaint"], [data-status="fatal"] { fill: #8b5cf6; fill-opacity: 0.8; }
-/* For Mech parts (stroke change) */
 circle[data-status="light"] { fill: var(--warning); stroke: var(--warning); }
 circle[data-status="heavy"] { fill: var(--danger); stroke: var(--danger); }
 
@@ -133,6 +208,7 @@ circle[data-status="heavy"] { fill: var(--danger); stroke: var(--danger); }
     background: var(--card);
     padding: 20px;
     border-top: 1px solid var(--border);
+    padding-bottom: 30px; 
 }
 .summary-row { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 0.9rem; }
 .summary-row.highlight { font-size: 1.2rem; font-weight: bold; margin-top: 10px; color: var(--success); }
@@ -157,7 +233,7 @@ circle[data-status="heavy"] { fill: var(--danger); stroke: var(--danger); }
 .bottom-sheet.active { transform: translateY(0); }
 
 .sheet-header { display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: bold; font-size: 1.2rem; }
-.close-sheet { background: none; border: none; color: #fff; font-size: 1.5rem; }
+.close-sheet { background: none; border: none; color: #fff; font-size: 1.5rem; padding: 0 10px;}
 
 .defect-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .defect-btn {
@@ -167,43 +243,29 @@ circle[data-status="heavy"] { fill: var(--danger); stroke: var(--danger); }
 }
 .defect-btn span { font-size: 1.5rem; }
 
-/* Settings */
+/* Settings & Paywall */
 .settings-list { padding: 10px 0; overflow-y: auto; max-height: 70vh; }
 .setting-item { margin-bottom: 15px; }
 .setting-item label { display: block; margin-bottom: 5px; color: var(--text-muted); font-size: 0.9rem; }
 .primary-btn { width: 100%; padding: 15px; background: var(--accent); color: white; border: none; border-radius: 10px; font-size: 1rem; font-weight: bold; margin-top: 10px;}
 .hint { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 20px; background: var(--input-bg); padding: 10px; border-radius: 8px; }
 
-/* --- PRO Features Styles --- */
-
-/* Модальное окно "Купи Pro" */
-.paywall-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.8); z-index: 100;
-    display: none; justify-content: center; align-items: center;
-    backdrop-filter: blur(5px);
-}
-.paywall-overlay.active { display: flex; }
-
 .paywall-card {
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
     background: linear-gradient(135deg, #1e1e1e, #2a2a2a);
     padding: 30px; border-radius: 20px; text-align: center;
     border: 1px solid var(--accent);
     box-shadow: 0 0 30px rgba(59, 130, 246, 0.3);
-    width: 80%; max-width: 300px;
+    width: 80%; max-width: 320px;
+    z-index: 101; display: none;
 }
+.paywall-card.active { display: block; }
 .paywall-icon { font-size: 3rem; margin-bottom: 15px; }
 .paywall-title { font-size: 1.5rem; font-weight: bold; margin-bottom: 10px; color: #fff; }
 .paywall-desc { color: #aaa; margin-bottom: 20px; font-size: 0.9rem; line-height: 1.5; }
 .buy-btn {
     background: var(--accent); color: white; border: none;
-    padding: 15px 30px; border-radius: 50px; font-weight: bold; font-size: 1.1rem;
-    width: 100%; cursor: pointer;
+    padding: 15px; border-radius: 50px; font-weight: bold; font-size: 1rem;
+    width: 100%; cursor: pointer; text-decoration: none; display: inline-block;
     box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
-}
-
-/* Визуальная блокировка PRO узлов на схеме (опционально) */
-.mech-part.locked {
-    opacity: 0.5;
-    stroke: #555; /* Серый цвет вместо синего */
 }
