@@ -14,19 +14,23 @@
 </head>
 <body>
 
-    <!-- SOCIAL SIDEBAR WIDGET -->
+<!-- SOCIAL SIDEBAR WIDGET -->
     <div class="social-sidebar">
         <div class="share-badge">
-            <span id="share-counter">1.5k</span>
+            <span id="share-counter">...</span>
             <small>SHARED</small>
         </div>
         <div class="share-divider">поделиться</div>
-        <a href="https://t.me/share/url?url=https://metalok.online&text=Калькулятор%20Металлообработки" target="_blank" class="social-btn telegram" onclick="incrementShare()">
+        
+        <!-- Ссылка ведет на подкаталог metal-calc -->
+        <a href="https://t.me/share/url?url=https://metalok.online/metal-calc/&text=Калькулятор%20Металлообработки" target="_blank" class="social-btn telegram" onclick="incrementShare()">
             <i class="fa-brands fa-telegram"></i>
         </a>
-        <a href="https://vk.com/share.php?url=https://metalok.online" target="_blank" class="social-btn vk" onclick="incrementShare()">
+        
+        <a href="https://vk.com/share.php?url=https://metalok.online/metal-calc/" target="_blank" class="social-btn vk" onclick="incrementShare()">
             <i class="fa-brands fa-vk"></i>
         </a>
+        
         <button class="social-btn copy" onclick="copyLink(); incrementShare()">
             <i class="fa-regular fa-copy"></i>
         </button>
@@ -217,9 +221,8 @@
         </div>
     </footer>
 
-    <!-- SCRIPT FOR SOCIAL WIDGET -->
+<!-- SCRIPT FOR SOCIAL WIDGET -->
     <script>
-        // Имитация счетчика
         document.addEventListener("DOMContentLoaded", function() {
             let countElement = document.getElementById('share-counter');
             
@@ -227,14 +230,14 @@
             let storedCount = sessionStorage.getItem('shareCount');
             
             if (!storedCount) {
-                // Если нет, генерируем случайное число от 1200 до 1800
-                let randomCount = Math.floor(Math.random() * (1800 - 1200 + 1) + 1200);
+                // Генерируем случайное число от 240 до 890 (чтобы был виден инкремент)
+                let randomCount = Math.floor(Math.random() * (890 - 240 + 1) + 240);
                 sessionStorage.setItem('shareCount', randomCount);
                 storedCount = randomCount;
             }
             
-            // Форматируем вывод (1.5k)
-            countElement.innerText = (storedCount / 1000).toFixed(1) + 'k';
+            // Выводим "чистое" число без сокращений до k, чтобы видеть +1
+            countElement.innerText = storedCount;
         });
 
         function incrementShare() {
@@ -243,18 +246,34 @@
             
             if (!hasClicked) {
                 let currentCount = parseInt(sessionStorage.getItem('shareCount'));
-                currentCount++;
+                currentCount++; // Прибавляем 1
+                
                 sessionStorage.setItem('shareCount', currentCount);
                 sessionStorage.setItem('userHasShared', 'true');
                 
-                // Обновляем UI
-                document.getElementById('share-counter').innerText = (currentCount / 1000).toFixed(1) + 'k';
+                // Моментально обновляем UI
+                let countElem = document.getElementById('share-counter');
+                countElem.style.transform = "scale(1.2)"; // Небольшая анимация увеличения
+                countElem.style.transition = "transform 0.2s";
+                countElem.innerText = currentCount;
+                
+                setTimeout(() => {
+                    countElem.style.transform = "scale(1)";
+                }, 200);
             }
         }
 
         function copyLink() {
-            navigator.clipboard.writeText(window.location.href).then(function() {
-                alert('Ссылка скопирована!');
+            // Копируем жестко заданную ссылку на раздел
+            const urlToShare = "https://metalok.online/metal-calc/";
+            
+            navigator.clipboard.writeText(urlToShare).then(function() {
+                // Можно добавить всплывашку, но пока просто алерт для простоты
+                // alert('Ссылка скопирована!'); 
+                // Лучше визуально мигнуть кнопкой, чтобы не бесить алертом
+                let copyBtn = document.querySelector('.social-btn.copy');
+                copyBtn.style.color = "#25D366";
+                setTimeout(() => copyBtn.style.color = "", 1000);
             }, function(err) {
                 console.error('Ошибка копирования: ', err);
             });
