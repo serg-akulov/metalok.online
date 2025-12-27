@@ -241,7 +241,7 @@ strong { color: var(--text-main); font-weight: 600; }
 }
 .collage { display: grid; gap: 15px; }
 .center-block { display: flex; justify-content: center; margin-bottom: 0; }
-.full-width { width: 100%; max-width: 800px; text-align: center; }
+.full-width { width: 50%; max-width: 800px; text-align: center; }
 .img-caption {
     font-size: 0.9rem;
     color: var(--text-muted); /* Делаем серым, чтобы не бил по глазам */
