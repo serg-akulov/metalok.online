@@ -3,9 +3,9 @@
     --card-bg: #1e1e1e;
     --text-main: #ffffff;
     --text-muted: #a0a0a0;
-    --accent-turn: #FFA500; /* Оранжевый */
-    --accent-mill: #FF2E63; /* Малиновый */
-    --accent-green: #25D366;
+    --accent-turn: #FFA500;
+    --accent-mill: #FF2E63;
+    --sidebar-bg: rgba(22, 22, 24, 0.95);
     --font-main: 'Inter', sans-serif;
 }
 
@@ -30,10 +30,10 @@ body {
 }
 
 /* Typography */
-h1 { font-size: 3rem; font-weight: 800; line-height: 1.1; margin-bottom: 20px; }
-h2 { font-size: 2.5rem; font-weight: 700; margin-bottom: 30px; }
+h1 { font-size: 2.5rem; font-weight: 800; line-height: 1.2; margin-bottom: 20px; }
+h2 { font-size: 2.2rem; font-weight: 700; margin-bottom: 30px; }
 h3 { font-size: 1.5rem; font-weight: 600; margin-bottom: 15px; color: var(--text-main); }
-p { color: var(--text-muted); font-size: 1.1rem; margin-bottom: 20px; }
+p { color: var(--text-muted); font-size: 1.05rem; margin-bottom: 20px; }
 strong { color: var(--text-main); font-weight: 600; }
 
 /* Buttons */
@@ -45,6 +45,8 @@ strong { color: var(--text-main); font-weight: 600; }
     font-weight: 600;
     transition: transform 0.2s, box-shadow 0.2s;
     text-align: center;
+    border: none;
+    cursor: pointer;
 }
 .btn-primary {
     background: linear-gradient(90deg, var(--accent-turn), var(--accent-mill));
@@ -62,7 +64,83 @@ strong { color: var(--text-main); font-weight: 600; }
     max-width: 400px;
 }
 
-/* Hero Section */
+/* --- SOCIAL SIDEBAR --- */
+.social-sidebar {
+    position: fixed;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    background: var(--sidebar-bg);
+    padding: 20px 10px;
+    border-radius: 12px 0 0 12px;
+    border: 1px solid #333;
+    border-right: none;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+    width: 70px;
+}
+
+.share-badge {
+    background: #1a2e25;
+    color: #25D366;
+    border: 1px solid #25D366;
+    border-radius: 8px;
+    padding: 5px;
+    text-align: center;
+    width: 100%;
+    margin-bottom: 10px;
+}
+.share-badge span {
+    display: block;
+    font-weight: 800;
+    font-size: 0.9rem;
+}
+.share-badge small {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    display: block;
+}
+
+.share-divider {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: 10px 0;
+}
+
+.social-btn {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: #2a2a2a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-main);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: 1px solid #444;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+.social-btn:hover {
+    background: white;
+    color: black;
+    transform: scale(1.1);
+}
+.copy {
+    background: transparent;
+    border: 1px solid #555;
+}
+
+/* --- HERO --- */
 .hero {
     padding: 80px 0;
     display: flex;
@@ -73,11 +151,11 @@ strong { color: var(--text-main); font-weight: 600; }
 .hero .container {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 40px;
+    gap: 50px;
     align-items: center;
 }
 .badge {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 165, 0, 0.1);
     padding: 5px 12px;
     border-radius: 20px;
     font-size: 0.9rem;
@@ -88,10 +166,10 @@ strong { color: var(--text-main); font-weight: 600; }
     margin-bottom: 20px;
     display: inline-block;
 }
-.subtitle {
-    font-size: 1.5rem;
-    color: var(--text-main);
-    margin-bottom: 20px;
+.description {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    opacity: 0.9;
 }
 .hero-image {
     position: relative;
@@ -116,35 +194,26 @@ strong { color: var(--text-main); font-weight: 600; }
     opacity: 0.4;
     z-index: 1;
 }
-.price-tag {
-    margin-top: 15px;
-    font-size: 0.9rem;
-    opacity: 0.7;
-}
 
-/* Philosophy Section */
+/* --- SECTIONS --- */
 .philosophy {
-    padding: 60px 0;
-    text-align: center;
-    border-top: 1px solid #333;
-    border-bottom: 1px solid #333;
+    padding: 80px 0;
     background: #181818;
+    border-top: 1px solid #222;
+    border-bottom: 1px solid #222;
 }
 .text-block {
     max-width: 800px;
     margin: 0 auto;
 }
+.center-text { text-align: center; }
 
-/* Features Sections */
-.features {
-    padding: 80px 0;
-}
+.features { padding: 80px 0; }
 .section-header {
     text-align: center;
     margin-bottom: 60px;
     max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 0 auto 60px;
 }
 .icon {
     font-size: 3rem;
@@ -159,14 +228,10 @@ strong { color: var(--text-main); font-weight: 600; }
     grid-template-columns: 1fr 1fr;
     gap: 60px;
     align-items: center;
-    margin-bottom: 80px;
+    margin-bottom: 100px;
 }
-.grid-feature.reverse {
-    direction: rtl; /* Меняет порядок колонок */
-}
-.grid-feature.reverse .feature-text {
-    direction: ltr; /* Возвращает текст в норму */
-}
+.grid-feature.reverse { direction: rtl; }
+.grid-feature.reverse .feature-text { direction: ltr; }
 
 .feature-img img {
     width: 100%;
@@ -174,25 +239,21 @@ strong { color: var(--text-main); font-weight: 600; }
     border: 1px solid #333;
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
 }
-.collage {
-    display: grid;
-    gap: 10px;
-}
+.collage { display: grid; gap: 15px; }
+.center-block { display: flex; justify-content: center; margin-bottom: 0; }
+.full-width { width: 100%; max-width: 800px; text-align: center; }
+.img-caption { font-size: 0.9rem; color: var(--accent-mill); margin-bottom: 10px; }
 
-/* Result Section */
+/* --- RESULT --- */
 .result {
     padding: 80px 0;
     background: #151515;
 }
-.center-text {
-    text-align: center;
-    max-width: 700px;
-    margin: 0 auto 50px auto;
-}
 .result-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 30px;
+    gap: 40px;
+    margin-top: 50px;
 }
 .card {
     background: var(--card-bg);
@@ -200,7 +261,9 @@ strong { color: var(--text-main); font-weight: 600; }
     border-radius: 12px;
     text-align: center;
     border: 1px solid #333;
+    transition: transform 0.3s;
 }
+.card:hover { transform: translateY(-5px); border-color: #555; }
 .card img {
     width: 100%;
     border-radius: 6px;
@@ -208,12 +271,13 @@ strong { color: var(--text-main); font-weight: 600; }
     border: 1px solid #444;
 }
 
-/* Footer */
+/* --- FOOTER --- */
 .footer {
-    padding: 80px 0 40px 0;
+    padding: 80px 0 40px;
     text-align: center;
     background: #0f0f0f;
 }
+.footer-text { margin-bottom: 40px; }
 .buy-block {
     margin: 40px 0;
     display: flex;
@@ -221,28 +285,50 @@ strong { color: var(--text-main); font-weight: 600; }
     align-items: center;
 }
 .note {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    margin-top: 10px;
+    font-size: 0.9rem;
+    color: var(--accent-turn);
+    margin-top: 15px;
+    display: block;
 }
 .author {
     margin-top: 60px;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     opacity: 0.5;
     border-top: 1px solid #333;
     padding-top: 20px;
 }
 
-/* Mobile Adaptation */
-@media (max-width: 768px) {
-    h1 { font-size: 2rem; }
-    h2 { font-size: 1.8rem; }
-    .hero .container, .grid-feature {
+/* --- MOBILE ADAPTATION --- */
+@media (max-width: 900px) {
+    h1 { font-size: 1.8rem; }
+    h2 { font-size: 1.6rem; }
+    
+    .social-sidebar {
+        top: auto;
+        bottom: 0;
+        transform: none;
+        flex-direction: row;
+        width: 100%;
+        height: auto;
+        border-radius: 16px 16px 0 0;
+        justify-content: space-around;
+        border-right: none;
+        border-top: 1px solid #333;
+        padding: 15px 10px;
+        background: #121212;
+    }
+    .share-badge { width: auto; margin-bottom: 0; padding: 5px 10px; display: flex; align-items: center; gap: 5px; }
+    .share-badge small { display: none; }
+    .share-divider { display: none; }
+    .social-btn { width: 40px; height: 40px; }
+
+    .hero .container, .grid-feature, .result-grid {
         grid-template-columns: 1fr;
         gap: 30px;
     }
-    .hero { text-align: center; padding: 40px 0; }
+    .hero { text-align: center; padding: 40px 0 100px; /* Отступ снизу для бара */ }
     .hero-image { order: -1; margin-bottom: 20px; }
     .grid-feature.reverse { direction: ltr; }
-    .result-grid { grid-template-columns: 1fr; }
+    
+    .footer { padding-bottom: 100px; /* Чтобы бар не перекрывал футер */ }
 }
