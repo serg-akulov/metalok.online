@@ -242,7 +242,13 @@ strong { color: var(--text-main); font-weight: 600; }
 .collage { display: grid; gap: 15px; }
 .center-block { display: flex; justify-content: center; margin-bottom: 0; }
 .full-width { width: 100%; max-width: 800px; text-align: center; }
-.img-caption { font-size: 0.9rem; color: var(--accent-mill); margin-bottom: 10px; }
+.img-caption {
+    font-size: 0.9rem;
+    color: var(--text-muted); /* Делаем серым, чтобы не бил по глазам */
+    margin-bottom: 10px;
+    text-align: center;
+    font-weight: 600;
+}
 
 /* --- RESULT --- */
 .result {
@@ -304,31 +310,49 @@ strong { color: var(--text-main); font-weight: 600; }
     h2 { font-size: 1.6rem; }
     
     .social-sidebar {
+        position: fixed; /* Жесткая фиксация */
         top: auto;
-        bottom: 0;
+        bottom: 0; /* Приклеиваем к полу */
+        left: 0;
+        right: 0;
         transform: none;
         flex-direction: row;
         width: 100%;
-        height: auto;
+        height: 60px; /* Фиксированная высота */
         border-radius: 16px 16px 0 0;
         justify-content: space-around;
+        align-items: center;
         border-right: none;
         border-top: 1px solid #333;
-        padding: 15px 10px;
+        padding: 0 10px;
         background: #121212;
+        z-index: 9999; /* Поверх всего */
+        box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
     }
-    .share-badge { width: auto; margin-bottom: 0; padding: 5px 10px; display: flex; align-items: center; gap: 5px; }
+    .share-badge { 
+        width: auto; 
+        margin-bottom: 0; 
+        padding: 5px 12px; 
+        display: flex; 
+        align-items: center; 
+        gap: 8px; 
+        border: none;
+        background: #1a1a1a;
+    }
+    .share-badge span { font-size: 1rem; }
     .share-badge small { display: none; }
     .share-divider { display: none; }
-    .social-btn { width: 40px; height: 40px; }
+    .social-btn { width: 40px; height: 40px; font-size: 1.1rem; border: none; background: transparent; }
 
     .hero .container, .grid-feature, .result-grid {
         grid-template-columns: 1fr;
         gap: 30px;
     }
-    .hero { text-align: center; padding: 40px 0 100px; /* Отступ снизу для бара */ }
+    .hero { text-align: center; padding: 40px 0 40px; }
     .hero-image { order: -1; margin-bottom: 20px; }
     .grid-feature.reverse { direction: ltr; }
     
-    .footer { padding-bottom: 100px; /* Чтобы бар не перекрывал футер */ }
+    /* Отступ чтобы футер не перекрывался баром */
+    body { padding-bottom: 70px; } 
+    .footer { padding-bottom: 20px; }
 }
